@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:schedu_block/homePage.dart';
+import 'package:schedu_block/signup.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -26,6 +27,15 @@ class Login extends StatelessWidget {
                   );
                 },
                 child: Text('Enter')
+            ),
+            ElevatedButton(
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignUp()),
+                  );
+                },
+                child: Text('Sign up')
             )
           ],
         )

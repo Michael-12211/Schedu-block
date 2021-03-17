@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:schedu_block/dailyview.dart';
 
-class Schedules extends StatelessWidget {
+class DailyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('Schedules')
+            title: Text('Daily View')
         ),
         body: Center(
             child: Column(
@@ -16,15 +15,6 @@ class Schedules extends StatelessWidget {
                       Navigator.pop(context);
                     },
                     child: Text('<')
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DailyView()),
-                      );
-                    },
-                    child: Text('Edit')
                 )
               ],
             )

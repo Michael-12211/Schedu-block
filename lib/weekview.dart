@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:schedu_block/dailyview.dart';
 import 'package:schedu_block/schedules.dart';
-import 'package:schedu_block/weekview.dart';
 
-class HomePage extends StatelessWidget {
+class WeekView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('Home page')
+            title: Text('Week View')
         ),
         body: Center(
             child: Column(
@@ -17,16 +16,7 @@ class HomePage extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text('Log out')
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => WeekView()),
-                      );
-                    },
-                    child: Text('Week View')
+                    child: Text('<')
                 ),
                 ElevatedButton(
                     onPressed: () {
@@ -35,7 +25,7 @@ class HomePage extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => Schedules()),
                       );
                     },
-                    child: Text('Schedules')
+                    child: Text('Add')
                 ),
                 ElevatedButton(
                     onPressed: () {
@@ -44,7 +34,7 @@ class HomePage extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => DailyView()),
                       );
                     },
-                    child: Text('Favorite')
+                    child: Text('Edit')
                 )
               ],
             )
