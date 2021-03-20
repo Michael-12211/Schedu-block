@@ -13,11 +13,14 @@ class HomePage extends StatelessWidget {
         body: Center(
             child: Column(
               children: [
-                ElevatedButton(
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
                     child: Text('Log out')
+                  )
                 ),
                 ElevatedButton(
                     onPressed: () {
