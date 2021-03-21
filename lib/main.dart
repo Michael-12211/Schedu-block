@@ -19,6 +19,7 @@ class Login extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
+            Image(image: AssetImage('images/Logo.PNG')),
             ElevatedButton(
                 onPressed: (){
                   Navigator.push(
