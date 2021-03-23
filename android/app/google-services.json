@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "849678385691",
+    "project_id": "schedu-block-25560",
+    "storage_bucket": "schedu-block-25560.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849678385691:android:5448c16a880af752faeebe",
+        "android_client_info": {
+          "package_name": "ca.sheridancollege.Schedu_block"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "849678385691-a42fbpdjfn819hga31a2b9a3jko9fehh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyaMb7uZNTQeXeJt7-O0r0ZzZcJ8Q3sAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849678385691-a42fbpdjfn819hga31a2b9a3jko9fehh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
