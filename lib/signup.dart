@@ -83,19 +83,24 @@ class _SignUpState extends State<SignUp> {
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             onPressed: () async {
               print('Attempting to create account');
-              try {
-                UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                    email: emailController.text,
-                    password: passwordController.text
-                );
-                print ("account created successfully");
-                Navigator.pop(context);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'weak-password') {
-                  print("password was too weak");
-                } else if (e.code == 'email-already-in-use') {
-                  print ("An account exists for that email");
+              if (passwordController.text == confirmController.text) {
+                try {
+                  UserCredential userCredential = await FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                      email: emailController.text,
+                      password: passwordController.text
+                  );
+                  print("account created successfully");
+                  Navigator.pop(context);
+                } on FirebaseAuthException catch (e) {
+                  if (e.code == 'weak-password') {
+                    print("password was too weak");
+                  } else if (e.code == 'email-already-in-use') {
+                    print("An account exists for that email");
+                  }
                 }
+              } else {
+                print("password was not confirmed");
               }
               //Navigator.pop(context);
             },

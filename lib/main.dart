@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:schedu_block/homePage.dart';
 import 'package:schedu_block/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -72,12 +73,25 @@ class _LoginState extends State<LoginPage> {
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        onPressed: () {
+        onPressed: () async {
           print('The user is ${emailController.text} with password ${passwordController.text}');
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-          );
+          try {
+            UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                email: emailController.text,
+                password: passwordController.text
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          } on FirebaseAuthException catch (e) {
+            if (e.code == 'user-not-found') {
+              print('No user with that email');
+            } else if (e.code == 'wrong-password') {
+              print('Wrong password');
+            }
+          }
+
         },
         child: Text("Login",
           textAlign: TextAlign.center,
