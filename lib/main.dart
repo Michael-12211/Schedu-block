@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:schedu_block/homePage.dart';
 import 'package:schedu_block/signup.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -19,17 +20,39 @@ class LoginPage extends StatefulWidget {
 
 class _LoginState extends State<LoginPage> {
 
-  TextEditingController usernameController = new TextEditingController();
+  bool _initialized = false;
+  bool _error = false;
+
+  void initializeFlutterFire() async {
+    try {
+      await Firebase.initializeApp();
+      setState(() {
+        _initialized = true;
+      });
+    } catch (e) {
+      setState(() {
+        _error = true;
+      });
+    }
+  }
+
+  TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
   @override
+  void initState() {
+    initializeFlutterFire();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final usernameField = TextField(
-      controller: usernameController,
+    final emailField = TextField(
+      controller: emailController,
       obscureText: false,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: "Username",
+        hintText: "Email",
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
       )
     );
@@ -50,7 +73,7 @@ class _LoginState extends State<LoginPage> {
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         onPressed: () {
-          print('The user is ${usernameController.text} with password ${passwordController.text}');
+          print('The user is ${emailController.text} with password ${passwordController.text}');
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
@@ -95,7 +118,7 @@ class _LoginState extends State<LoginPage> {
                   child: Image(image: AssetImage('images/Logo.PNG'))
                 ),
                 SizedBox(height: 45),
-                usernameField,
+                emailField,
                 SizedBox(height: 15),
                 passwordField,
                 SizedBox(height:15),

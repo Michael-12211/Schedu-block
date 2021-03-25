@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 class SignUp extends StatefulWidget {
@@ -11,18 +13,40 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
 
-  TextEditingController usernameController = new TextEditingController();
+  bool _initialized = false;
+  bool _error = false;
+
+  void initializeFlutterFire() async {
+    try {
+      await Firebase.initializeApp();
+      setState(() {
+        _initialized = true;
+      });
+    } catch (e) {
+      setState(() {
+        _error = true;
+      });
+    }
+  }
+
+  TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   TextEditingController confirmController = new TextEditingController();
 
   @override
+  void initState() {
+    initializeFlutterFire();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final usernameField = TextField(
-        controller: usernameController,
+    final emailField = TextField(
+        controller: emailController,
         obscureText: false,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-            hintText: "Username",
+            hintText: "Email",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(32.0))
         )
@@ -57,9 +81,23 @@ class _SignUpState extends State<SignUp> {
                 .size
                 .width,
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-            onPressed: () {
-              print('Created an account');
-              Navigator.pop(context);
+            onPressed: () async {
+              print('Attempting to create account');
+              try {
+                UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    email: emailController.text,
+                    password: passwordController.text
+                );
+                print ("account created successfully");
+                Navigator.pop(context);
+              } on FirebaseAuthException catch (e) {
+                if (e.code == 'weak-password') {
+                  print("password was too weak");
+                } else if (e.code == 'email-already-in-use') {
+                  print ("An account exists for that email");
+                }
+              }
+              //Navigator.pop(context);
             },
             child: Text("Create account",
               textAlign: TextAlign.center,
@@ -98,7 +136,7 @@ class _SignUpState extends State<SignUp> {
                       children: <Widget>[
                         backButton,
                         SizedBox(height: 15),
-                        usernameField,
+                        emailField,
                         SizedBox(height: 15),
                         passwordField,
                         SizedBox(height: 15),
