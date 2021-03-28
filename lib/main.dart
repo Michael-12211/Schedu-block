@@ -3,6 +3,7 @@ import 'package:schedu_block/homePage.dart';
 import 'package:schedu_block/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -86,9 +87,11 @@ class _LoginState extends State<LoginPage> {
             );
           } on FirebaseAuthException catch (e) {
             if (e.code == 'user-not-found') {
-              print('No user with that email');
+              Alert(context: context, title: "login failed", desc: "There is no user with that email").show();
+              //print('No user with that email');
             } else if (e.code == 'wrong-password') {
-              print('Wrong password');
+              Alert(context: context, title: "login failed", desc: "Incorrect password").show();
+              //print('Wrong password');
             }
           }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 
 class SignUp extends StatefulWidget {
@@ -94,13 +95,16 @@ class _SignUpState extends State<SignUp> {
                   Navigator.pop(context);
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'weak-password') {
-                    print("password was too weak");
+                    Alert(context: context, title: "Creation failed", desc: "Password too weak").show();
+                    //print("password was too weak");
                   } else if (e.code == 'email-already-in-use') {
-                    print("An account exists for that email");
+                    Alert(context: context, title: "Creation failed", desc: "That email is taken").show();
+                    //print("An account exists for that email");
                   }
                 }
               } else {
-                print("password was not confirmed");
+                Alert(context: context, title: "Creation failed", desc: "Confirm password does not match password").show();
+                //print("password was not confirmed");
               }
               //Navigator.pop(context);
             },
