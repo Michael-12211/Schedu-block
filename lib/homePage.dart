@@ -22,6 +22,7 @@ class HomePage extends StatelessWidget {
                     child: Text('Log out')
                   )
                 ),
+                SizedBox(height: 50),
                 ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -29,25 +30,46 @@ class HomePage extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => WeekView()),
                       );
                     },
-                    child: Text('Week View')
+                    child: SizedBox(
+                        height: 205,
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        child: Image(image: AssetImage('images/Logo.PNG'))
+                    ),
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Schedules()),
-                      );
-                    },
-                    child: Text('Schedules')
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DailyView()),
-                      );
-                    },
-                    child: Text('Favorite')
+                SizedBox(height: 100),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Schedules()),
+                          );
+                        },
+                        child: Text('Schedules')
+                      ),
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.3),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => DailyView()),
+                          );
+                        },
+                        child: Column (
+                          children: [
+                            Text('Favorite'),
+                            SizedBox(
+                              width: 50,
+                              height: 100,
+                              child: Image(image: AssetImage('images/Logo.PNG'))
+                            )
+                          ]
+                        )
+                    )
+                  ]
                 )
               ],
             )
