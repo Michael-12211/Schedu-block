@@ -4,6 +4,30 @@ import 'package:schedu_block/dailyview.dart';
 class Schedules extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+    //making all the schedules show up uniform
+    final schedules = <Widget>[];
+    for (var i = 0; i < 10; i++){
+      schedules.add( MaterialButton(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 90,
+              width: 60,
+              child: Image(image: AssetImage('images/Logo.PNG')),
+            ),
+            Text("name")
+          ],
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => DailyView()),
+          );
+        }
+      ));
+    }
+
     return Scaffold(
         appBar: AppBar(
             title: Text('Schedules')
@@ -11,20 +35,33 @@ class Schedules extends StatelessWidget {
         body: Center(
             child: Column(
               children: [
-                ElevatedButton(
+
+                SizedBox(
+                  height: 500,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Scrollbar(
+                    child: GridView.count (
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 80,
+                      children: schedules
+                    )
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text('<')
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DailyView()),
-                      );
-                    },
-                    child: Text('Edit')
+                    child: Text('<'),
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18)
+                        )
+                      )
+                    ),
+                  ),
                 )
               ],
             )
