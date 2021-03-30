@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spannable_grid/spannable_grid.dart';
 
 
 class DailyView extends StatefulWidget {
@@ -9,11 +10,32 @@ class DailyView extends StatefulWidget {
   _DayState createState() => _DayState();
 }
 
+class block {
+  String name;
+  block () {
+    name = "text";
+  }
+}
+
 class _DayState extends State<DailyView> {
   TextEditingController nameController = new TextEditingController(text: 'Blank');
 
   @override
   Widget build(BuildContext context) {
+    List<SpannableGridCellData> schedData = List();
+    var occupied = new List(24);
+
+    for (int i = 1; i <= 24; i++) {
+      schedData.add(SpannableGridCellData(
+          id: "time " + i.toString(),
+          column: 1,
+          row: i,
+          child: Container(
+            child: Text ((((i-1)%12)+1).toString() + ":00")
+          )
+      ));
+    }
+
     final nameField = TextField(
         controller: nameController,
         obscureText: false,
@@ -53,6 +75,27 @@ class _DayState extends State<DailyView> {
                   child: Column(
                     children: [
                       nameField,
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        margin: EdgeInsets.all(15.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 2.0,
+                            color: Colors.black
+                          )
+                        ),
+                          child: ListView(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            children: [SpannableGrid(
+                              columns: 2,
+                              rows: 24,
+                              spacing: 2.0,
+                              rowHeight: 50,
+                              cells: schedData
+                            )]
+                          )
+                      ),
                       backButton
                     ],
                   )

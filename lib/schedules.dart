@@ -40,6 +40,7 @@ class Schedules extends StatelessWidget {
                   height: 500,
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Scrollbar(
+                    isAlwaysShown: true,
                     child: GridView.count (
                       crossAxisCount: 3,
                       mainAxisSpacing: 80,
