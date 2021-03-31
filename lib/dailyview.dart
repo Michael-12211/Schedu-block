@@ -13,13 +13,19 @@ class DailyView extends StatefulWidget {
 
 class block {
   String name;
-  block () {
-    name = "text";
+  int duration;
+  List<String> tags;
+  String Color;
+  block (this.name, this.duration, this.tags, this.Color) {
   }
 }
 
 class _DayState extends State<DailyView> {
   String oName;
+
+  List<SpannableGridCellData> schedData = List();
+  var occupied = new List(24);
+  int where = 6;
 
   TextEditingController nameController;
 
@@ -28,10 +34,55 @@ class _DayState extends State<DailyView> {
     nameController = new TextEditingController(text: oName);
   }
 
+
+
   @override
   Widget build(BuildContext context) {
-    List<SpannableGridCellData> schedData = List();
-    var occupied = new List(24);
+
+    schedData.clear();
+    schedData.add(SpannableGridCellData(
+        id: "test condition",
+        column: 2,
+        row: where,
+        rowSpan: 2,
+        child: Draggable<block>(
+          data: block("test condition",2,["big"],"blue"),
+          child: Container (
+            color: Colors.blue,
+            child: Text("test condition")
+          ),
+          feedback: Container(
+            color: Colors.blue,
+            height: 100,
+            width: 130,
+            child: Text("test condition")
+          ),
+        ),
+    ));
+    schedData.add(SpannableGridCellData(
+        id: "dest1",
+        column: 2,
+        row: 1,
+        child: DragTarget<block>(
+          builder: (
+          BuildContext context,
+              List<dynamic> accepted,
+              List<dynamic> rejected
+          ) {
+            return Container (
+              color: Colors.cyan,
+              child: Text ("drag here")
+            );
+          },
+          onAccept: (block data) {
+            print("dragged");
+            where = 1;
+            setState(() {
+
+            });
+          },
+        )
+    ));
 
     for (int i = 1; i <= 24; i++) {
       schedData.add(SpannableGridCellData(
