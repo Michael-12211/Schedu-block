@@ -3,11 +3,12 @@ import 'package:spannable_grid/spannable_grid.dart';
 
 
 class DailyView extends StatefulWidget {
-  DailyView({Key key, this.title}) : super(key: key);
+  String oName;
+  DailyView({Key key, this.title, @required this.oName}) : super(key: key);
   final String title;
 
   @override
-  _DayState createState() => _DayState();
+  _DayState createState() => _DayState(oName);
 }
 
 class block {
@@ -18,7 +19,14 @@ class block {
 }
 
 class _DayState extends State<DailyView> {
-  TextEditingController nameController = new TextEditingController(text: 'Blank');
+  String oName;
+
+  TextEditingController nameController;
+
+  _DayState (String n){
+    oName = n;
+    nameController = new TextEditingController(text: oName);
+  }
 
   @override
   Widget build(BuildContext context) {

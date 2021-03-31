@@ -4,6 +4,8 @@ import 'package:schedu_block/schedules.dart';
 import 'package:schedu_block/weekview.dart';
 
 class HomePage extends StatelessWidget {
+  String favorite = "test";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +57,7 @@ class HomePage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => DailyView()),
+                            MaterialPageRoute(builder: (context) => DailyView(oName: favorite,)),
                           );
                         },
                         child: Column (

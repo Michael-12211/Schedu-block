@@ -16,13 +16,13 @@ class Schedules extends StatelessWidget {
               width: 60,
               child: Image(image: AssetImage('images/Logo.PNG')),
             ),
-            Text("name")
+            Text("name: " + i.toString())
           ],
         ),
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => DailyView()),
+            MaterialPageRoute(builder: (context) => DailyView(oName: "Name: " + i.toString())),
           );
         }
       ));
