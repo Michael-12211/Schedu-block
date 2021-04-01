@@ -19,13 +19,15 @@ class _SchedulesState extends State<Schedules> {
 
   var schedules = <Widget>[];
 
+  final Future<String> _wait = Future<String>.delayed(
+      Duration(milliseconds: 200),
+      () => 'Data Loaded'
+  );
+
   @override
   Widget build(BuildContext context) {
 
-    var db = database;
-    print ('this is ' + db.toString());
-
-    /*database.once().then((DataSnapshot snapshot) {
+    database.once().then((DataSnapshot snapshot) {
       //print ('Data : ${snapshot.value}');
       //var parsed = jsonDecode(snapshot);
       var map = snapshot.value as Map<dynamic, dynamic>;
@@ -56,7 +58,7 @@ class _SchedulesState extends State<Schedules> {
             }
         ));
       });
-    });*/
+    });
 
     //sleep(Duration(seconds: 3));
 
@@ -97,10 +99,19 @@ class _SchedulesState extends State<Schedules> {
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Scrollbar(
                     isAlwaysShown: true,
-                    child: GridView.count (
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 80,
-                      children: schedules
+                    child: FutureBuilder<String>(
+                      future: _wait,
+                      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData) {
+                          return GridView.count(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 80,
+                              children: schedules
+                          );
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      }
                     )
                   ),
                 ),
