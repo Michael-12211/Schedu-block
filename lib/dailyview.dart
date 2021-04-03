@@ -50,6 +50,7 @@ class _DayState extends State<DailyView> {
     //}
     //blocks[0] = block(0,"test condition",2,["big"],"blue", 6);
     //blocks[1] = block(1,"the second",4,[],"red", 1);
+    loadData(false);
   }
 
   final Future<String> _wait = Future<String>.delayed(
@@ -57,13 +58,110 @@ class _DayState extends State<DailyView> {
           () => 'Data Loaded'
   );
 
-  @override
-  Widget build(BuildContext context) {
+  loadData (bool re) {
     for (int i = 0; i < 25; i++) {
       occupied[i] = false;
     }
 
     schedData.clear();
+
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][user]['schedules'][index]['nodes'];
+      //print (nodes);
+      //print (index);
+
+      nodes.forEach((key, value) {
+        print ('the node is: ' + value['name']);
+
+        List<String> tags;
+
+        block curr = block(value['id'],value['name'],value['duration'],[],value['colour'],value['start']);
+        //value.forEa
+
+        schedData.add(SpannableGridCellData(
+          id: value['id'],
+          column: 2,
+          row: value['start'],
+          rowSpan: value['duration'],
+          child: Draggable<block>(
+            data: curr,
+            child: Container(
+                color: Colors.blue,
+                child: Text(curr.name)
+            ),
+            feedback: Container(
+                color: Colors.blue,
+                height: 100,
+                width: 130,
+                child: Text(curr.name)
+            ),
+          ),
+        ));
+        for (int b = curr.start; b < curr.start + curr.duration; b++){
+          occupied[b] = true;
+        }
+      });
+
+      for (int i = 1; i <= 24; i++) {
+        schedData.add(SpannableGridCellData(
+            id: "time " + i.toString(),
+            column: 1,
+            row: i,
+            child: Container(
+                child: Text((((i - 1) % 12) + 1).toString() + ":00")
+            )
+        ));
+        if (!occupied[i]) {
+          schedData.add(SpannableGridCellData(
+              id: "dest" + i.toString(),
+              column: 2,
+              row: i,
+              child: DragTarget<block>(
+                builder: (BuildContext context,
+                    List<dynamic> accepted,
+                    List<dynamic> rejected) {
+                  return Container(
+
+                  );
+                },
+                onAccept: (block data) async {
+                  if (data.duration + i < 26) {
+                    print("dragged");
+                    //String curkey = curr
+                    var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(data.index).child('start');
+                    currChi.set(i);
+                    //blocks[data.index].start = i;
+                    loadData(true);
+                    //sleep(Duration (seconds: 1));
+                    //etState(() {
+
+                    //});
+                  }
+                },
+              )
+          ));
+        }
+      }
+      if (re) {
+        setState(() {
+
+        });
+      }
+    });
+
+    //return schedData;
+    //setState(() {
+
+    //});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+
+    //schedData.clear();
+    //loadData(false);
 
     /*for (int i = 0; i < 24; i++) {
       if (blocks[i].name != "") {
@@ -92,6 +190,9 @@ class _DayState extends State<DailyView> {
       }
     }*/
 
+    //database.child('maybe').set("test");
+
+    /*
     database.once().then((DataSnapshot snapshot) {
       var map = snapshot.value as Map<dynamic, dynamic>;
       var nodes = map['users'][user]['schedules'][index]['nodes'];
@@ -155,10 +256,13 @@ class _DayState extends State<DailyView> {
                 onAccept: (block data) {
                   if (data.duration + i < 26) {
                     print("dragged");
+                    //String curkey = curr
+                    var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(data.index).child('start');
+                    currChi.set(i);
                     //blocks[data.index].start = i;
-                    //setState(() {
+                    setState(() {
 
-                    //});
+                    });
                   }
                 },
               )
@@ -166,6 +270,7 @@ class _DayState extends State<DailyView> {
           }
         }
       });
+     */
 
     final nameField = TextField(
         controller: nameController,
