@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 
 class SignUp extends StatefulWidget {
@@ -13,6 +14,8 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+
+  final database = FirebaseDatabase.instance.reference();
 
   bool _initialized = false;
   bool _error = false;
@@ -92,6 +95,7 @@ class _SignUpState extends State<SignUp> {
                       password: passwordController.text
                   );
                   print("account created successfully");
+                  addData(emailController.text.split("@")[0]);
                   Navigator.pop(context);
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'weak-password') {
@@ -158,5 +162,27 @@ class _SignUpState extends State<SignUp> {
             )
         )
     );
+  }
+
+  addData (String name) {
+    var currChi = database.child('users').child(name);
+    currChi.child("favorite").set("a1");
+
+    var days = currChi.child("days");
+    days.child("mon").set(0);
+    days.child("tue").set(0);
+    days.child("wed").set(0);
+    days.child("thu").set(0);
+    days.child("fri").set(0);
+    days.child("sat").set(0);
+    days.child("sun").set(0);
+
+    currChi = currChi.child("schedules").child("a1");
+    currChi.child("id").set("a1");
+    currChi.child("name").set("first");
+    currChi.child("colour").set("blue");
+    currChi.child("start").set(4);
+    currChi.child("duration").set(2);
+    currChi.child("tags").child("a1").set("welcome");
   }
 }
