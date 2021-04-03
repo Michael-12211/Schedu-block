@@ -89,7 +89,21 @@ class _DayState extends State<DailyView> {
             data: curr,
             child: Container(
                 color: Colors.blue,
-                child: Text(curr.name)
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(" " + curr.name),
+                    MaterialButton(
+                        onPressed: () {
+                          print("Test");
+                          var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(curr.index);
+                          currChi.remove();
+                          loadData(true);
+                        },
+                      child: Text("X", textAlign: TextAlign.right,),
+                    )
+                  ],
+                )
             ),
             feedback: Container(
                 color: Colors.blue,
