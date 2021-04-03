@@ -160,117 +160,7 @@ class _DayState extends State<DailyView> {
   Widget build(BuildContext context) {
 
 
-    //schedData.clear();
-    //loadData(false);
 
-    /*for (int i = 0; i < 24; i++) {
-      if (blocks[i].name != "") {
-        schedData.add(SpannableGridCellData(
-          id: i,
-          column: 2,
-          row: blocks[i].start,
-          rowSpan: blocks[i].duration,
-          child: Draggable<block>(
-            data: blocks[i],
-            child: Container(
-                color: Colors.blue,
-                child: Text(blocks[i].name)
-            ),
-            feedback: Container(
-                color: Colors.blue,
-                height: 100,
-                width: 130,
-                child: Text(blocks[i].name)
-            ),
-          ),
-        ));
-        for (int b = blocks[i].start; b < blocks[i].start + blocks[i].duration; b++){
-          occupied[b] = true;
-        }
-      }
-    }*/
-
-    //database.child('maybe').set("test");
-
-    /*
-    database.once().then((DataSnapshot snapshot) {
-      var map = snapshot.value as Map<dynamic, dynamic>;
-      var nodes = map['users'][user]['schedules'][index]['nodes'];
-      //print (nodes);
-      //print (index);
-
-      nodes.forEach((key, value) {
-        print ('the node is: ' + value['name']);
-
-        List<String> tags;
-
-        block curr = block(value['id'],value['name'],value['duration'],[],value['colour'],value['start']);
-        //value.forEa
-
-        schedData.add(SpannableGridCellData(
-          id: value['id'],
-          column: 2,
-          row: value['start'],
-          rowSpan: value['duration'],
-          child: Draggable<block>(
-            data: curr,
-            child: Container(
-                color: Colors.blue,
-                child: Text(curr.name)
-            ),
-            feedback: Container(
-                color: Colors.blue,
-                height: 100,
-                width: 130,
-                child: Text(curr.name)
-            ),
-          ),
-        ));
-        for (int b = curr.start; b < curr.start + curr.duration; b++){
-          occupied[b] = true;
-        }
-      });
-
-      for (int i = 1; i <= 24; i++) {
-        schedData.add(SpannableGridCellData(
-            id: "time " + i.toString(),
-            column: 1,
-            row: i,
-            child: Container(
-                child: Text((((i - 1) % 12) + 1).toString() + ":00")
-            )
-        ));
-        if (!occupied[i]) {
-          schedData.add(SpannableGridCellData(
-              id: "dest" + i.toString(),
-              column: 2,
-              row: i,
-              child: DragTarget<block>(
-                builder: (BuildContext context,
-                    List<dynamic> accepted,
-                    List<dynamic> rejected) {
-                  return Container(
-
-                  );
-                },
-                onAccept: (block data) {
-                  if (data.duration + i < 26) {
-                    print("dragged");
-                    //String curkey = curr
-                    var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(data.index).child('start');
-                    currChi.set(i);
-                    //blocks[data.index].start = i;
-                    setState(() {
-
-                    });
-                  }
-                },
-              )
-            ));
-          }
-        }
-      });
-     */
 
     final nameField = TextField(
         controller: nameController,
@@ -288,15 +178,34 @@ class _DayState extends State<DailyView> {
         borderRadius: BorderRadius.circular(30),
         color: Color(0xff01A0C7),
         child: MaterialButton(
-            minWidth: MediaQuery
+            /*minWidth: MediaQuery
                 .of(context)
                 .size
-                .width,
+                .width,*/
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             onPressed: () {
               Navigator.pop(context);
             },
             child: Text("<",
+              textAlign: TextAlign.center,
+            )
+        )
+    );
+
+    final addButton = Material(
+        elevation: 5.0,
+        borderRadius: BorderRadius.circular(30),
+        color: Color(0xff01A0C7),
+        child: MaterialButton(
+            /*minWidth: MediaQuery
+                .of(context)
+                .size
+                .width,*/
+            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            onPressed: () async {
+              await addBlock(context);
+            },
+            child: Text("+",
               textAlign: TextAlign.center,
             )
         )
@@ -341,12 +250,58 @@ class _DayState extends State<DailyView> {
                             )]
                           )
                       ),
-                      backButton
+                      Row(
+                        children: [
+                          backButton,
+                          addButton
+                        ]
+                      )
                     ],
                   )
               )
           )
         )
+    );
+  }
+
+  final TextEditingController _nameController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Future<void> addBlock(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        builder: (context){
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              content: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      validator: (value) {
+                        return value.isNotEmpty ? null : "Enter any text";
+                      },
+                      decoration: InputDecoration(hintText: "Enter block name"),
+                    )
+                  ],
+                )
+              ),
+              title: Text("Add block"),
+              actions: <Widget>[
+                InkWell(
+                  child: Text("ADD"),
+                  onTap: () {
+                    if (_formKey.currentState.validate()) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                )
+              ],
+            );
+          });
+        }
     );
   }
 }
