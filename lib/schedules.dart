@@ -20,7 +20,7 @@ class _SchedulesState extends State<Schedules> {
   var schedules = <Widget>[];
 
   final Future<String> _wait = Future<String>.delayed(
-      Duration(milliseconds: 200),
+      Duration(milliseconds: 500),
       () => 'Data Loaded'
   );
 
@@ -36,6 +36,7 @@ class _SchedulesState extends State<Schedules> {
       //print ('schedules: ' + scheds.toString());
       //String name = scheds['example']['name'];
       //print (name);
+      //print (scheds);
 
       scheds.forEach((key, value) {
         print ('the schedule is: ' + value['name']);
@@ -53,7 +54,7 @@ class _SchedulesState extends State<Schedules> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DailyView(oName: value['name'])),
+                MaterialPageRoute(builder: (context) => DailyView(oName: value['name'], identifier: value['id'],)),
               );
             }
         ));

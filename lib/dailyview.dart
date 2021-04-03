@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:spannable_grid/spannable_grid.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 
 class DailyView extends StatefulWidget {
   String oName;
-  DailyView({Key key, this.title, @required this.oName}) : super(key: key);
+  String identifier;
+  DailyView({Key key, this.title, @required this.oName, @required this.identifier}) : super(key: key);
   final String title;
 
   @override
-  _DayState createState() => _DayState(oName);
+  _DayState createState() => _DayState(oName, identifier);
 }
 
 class block {
-  int index;
+  String index;
   String name;
   int duration;
   List<String> tags;
@@ -23,8 +25,13 @@ class block {
 }
 
 class _DayState extends State<DailyView> {
-  String oName;
-  List<block> blocks;
+
+  final database = FirebaseDatabase.instance.reference();
+
+  //String oName;
+  String index;
+  String user;
+  //List<block> blocks;
 
   List<SpannableGridCellData> schedData = List();
   var occupied = new List(25);
@@ -32,29 +39,33 @@ class _DayState extends State<DailyView> {
 
   TextEditingController nameController;
 
-  _DayState (String n){
-    oName = n;
-    nameController = new TextEditingController(text: oName);
-    blocks = List<block>(24);
-    for (int i = 0; i < 24; i++){
-      blocks[i] = block(i,"",0,[],"",0);
-    }
-    blocks[0] = block(0,"test condition",2,["big"],"blue", 6);
-    blocks[1] = block(1,"the second",4,[],"red", 1);
+  _DayState (String n, String k){
+    //oName = n;
+    index = k;
+    user = 'admin';
+    nameController = new TextEditingController(text: n);
+    //blocks = List<block>(24);
+    //for (int i = 0; i < 24; i++){
+    //  blocks[i] = block("","",0,[],"",0);
+    //}
+    //blocks[0] = block(0,"test condition",2,["big"],"blue", 6);
+    //blocks[1] = block(1,"the second",4,[],"red", 1);
   }
 
-
+  final Future<String> _wait = Future<String>.delayed(
+      Duration(milliseconds: 500),
+          () => 'Data Loaded'
+  );
 
   @override
   Widget build(BuildContext context) {
-
-    for (int i = 0; i < 25; i++){
+    for (int i = 0; i < 25; i++) {
       occupied[i] = false;
     }
 
     schedData.clear();
 
-    for (int i = 0; i < 24; i++) {
+    /*for (int i = 0; i < 24; i++) {
       if (blocks[i].name != "") {
         schedData.add(SpannableGridCellData(
           id: i,
@@ -79,44 +90,82 @@ class _DayState extends State<DailyView> {
           occupied[b] = true;
         }
       }
-    }
+    }*/
 
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][user]['schedules'][index]['nodes'];
+      //print (nodes);
+      //print (index);
 
-    for (int i = 1; i <= 24; i++) {
-      schedData.add(SpannableGridCellData(
-          id: "time " + i.toString(),
-          column: 1,
-          row: i,
-          child: Container(
-            child: Text ((((i-1)%12)+1).toString() + ":00")
-          )
-      ));
-      if (!occupied[i]) {
+      nodes.forEach((key, value) {
+        print ('the node is: ' + value['name']);
+
+        List<String> tags;
+
+        block curr = block(value['id'],value['name'],value['duration'],[],value['colour'],value['start']);
+        //value.forEa
+
         schedData.add(SpannableGridCellData(
-            id: "dest" + i.toString(),
-            column: 2,
+          id: value['id'],
+          column: 2,
+          row: value['start'],
+          rowSpan: value['duration'],
+          child: Draggable<block>(
+            data: curr,
+            child: Container(
+                color: Colors.blue,
+                child: Text(curr.name)
+            ),
+            feedback: Container(
+                color: Colors.blue,
+                height: 100,
+                width: 130,
+                child: Text(curr.name)
+            ),
+          ),
+        ));
+        for (int b = curr.start; b < curr.start + curr.duration; b++){
+          occupied[b] = true;
+        }
+      });
+
+      for (int i = 1; i <= 24; i++) {
+        schedData.add(SpannableGridCellData(
+            id: "time " + i.toString(),
+            column: 1,
             row: i,
-            child: DragTarget<block>(
-              builder: (BuildContext context,
-                  List<dynamic> accepted,
-                  List<dynamic> rejected) {
-                return Container(
-
-                );
-              },
-              onAccept: (block data) {
-                if (data.duration + i < 26) {
-                  print("dragged");
-                  blocks[data.index].start = i;
-                  setState(() {
-
-                  });
-                }
-              },
+            child: Container(
+                child: Text((((i - 1) % 12) + 1).toString() + ":00")
             )
         ));
-      }
-    }
+        if (!occupied[i]) {
+          schedData.add(SpannableGridCellData(
+              id: "dest" + i.toString(),
+              column: 2,
+              row: i,
+              child: DragTarget<block>(
+                builder: (BuildContext context,
+                    List<dynamic> accepted,
+                    List<dynamic> rejected) {
+                  return Container(
+
+                  );
+                },
+                onAccept: (block data) {
+                  if (data.duration + i < 26) {
+                    print("dragged");
+                    //blocks[data.index].start = i;
+                    //setState(() {
+
+                    //});
+                  }
+                },
+              )
+            ));
+          }
+        }
+      });
 
     final nameField = TextField(
         controller: nameController,
@@ -169,12 +218,21 @@ class _DayState extends State<DailyView> {
                         ),
                           child: ListView(
                             physics: AlwaysScrollableScrollPhysics(),
-                            children: [SpannableGrid(
-                              columns: 2,
-                              rows: 24,
-                              spacing: 2.0,
-                              rowHeight: 50,
-                              cells: schedData
+                            children: [FutureBuilder<String>(
+                              future: _wait,
+                                builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                                  if (snapshot.hasData) {
+                                    return SpannableGrid(
+                                        columns: 2,
+                                        rows: 24,
+                                        spacing: 2.0,
+                                        rowHeight: 50,
+                                        cells: schedData
+                                    );
+                                  } else {
+                                    return CircularProgressIndicator();
+                                  }
+                                }
                             )]
                           )
                       ),
