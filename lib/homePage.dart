@@ -5,6 +5,12 @@ import 'package:schedu_block/weekview.dart';
 
 class HomePage extends StatelessWidget {
   String favorite = "test";
+  String uName;
+
+  HomePage (String n){
+    uName = n;
+    print (uName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +53,7 @@ class HomePage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Schedules()),
+                            MaterialPageRoute(builder: (context) => Schedules(uName: uName)),
                           );
                         },
                         child: Text('Schedules')

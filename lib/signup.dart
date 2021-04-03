@@ -179,6 +179,10 @@ class _SignUpState extends State<SignUp> {
 
     currChi = currChi.child("schedules").child("a1");
     currChi.child("id").set("a1");
+    currChi.child("name").set("example");
+
+    currChi = currChi.child("nodes").child("a1");
+    currChi.child("id").set("a1");
     currChi.child("name").set("first");
     currChi.child("colour").set("blue");
     currChi.child("start").set(4);

@@ -6,14 +6,18 @@ import 'package:schedu_block/dailyview.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class Schedules extends StatefulWidget {
-  Schedules({Key key, this.title}) : super(key: key);
+  String uName;
+  Schedules({Key key, this.title, @required this.uName}) : super(key: key);
+  //print ("the uName is" + uName);
   final String title;
 
   @override
-  _SchedulesState createState() => _SchedulesState();
+  _SchedulesState createState() => _SchedulesState(uName);
 }
 
 class _SchedulesState extends State<Schedules> {
+
+  String uName;
 
   final database = FirebaseDatabase.instance.reference();
 
@@ -24,6 +28,11 @@ class _SchedulesState extends State<Schedules> {
       () => 'Data Loaded'
   );
 
+  _SchedulesState (String u) {
+    uName = u;
+    print ("uName: " + uName);
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -32,7 +41,7 @@ class _SchedulesState extends State<Schedules> {
       //var parsed = jsonDecode(snapshot);
       var map = snapshot.value as Map<dynamic, dynamic>;
       //print ('first ' + map['users'].toString());
-      var scheds = map['users']['admin']['schedules'];
+      var scheds = map['users'][uName]['schedules'];
       //print ('schedules: ' + scheds.toString());
       //String name = scheds['example']['name'];
       //print (name);
@@ -54,7 +63,7 @@ class _SchedulesState extends State<Schedules> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DailyView(oName: value['name'], identifier: value['id'],)),
+                MaterialPageRoute(builder: (context) => DailyView(oName: value['name'], identifier: value['id'], uName: uName,)),
               );
             }
         ));

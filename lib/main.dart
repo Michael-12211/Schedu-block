@@ -83,7 +83,7 @@ class _LoginState extends State<LoginPage> {
             );
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => HomePage(emailController.text.split("@")[0])),
             );
           } on FirebaseAuthException catch (e) {
             if (e.code == 'user-not-found') {

@@ -6,11 +6,12 @@ import 'package:firebase_database/firebase_database.dart';
 class DailyView extends StatefulWidget {
   String oName;
   String identifier;
-  DailyView({Key key, this.title, @required this.oName, @required this.identifier}) : super(key: key);
+  String uName;
+  DailyView({Key key, this.title, @required this.oName, @required this.identifier, @required this.uName}) : super(key: key);
   final String title;
 
   @override
-  _DayState createState() => _DayState(oName, identifier);
+  _DayState createState() => _DayState(oName, identifier, uName);
 }
 
 class block {
@@ -39,10 +40,10 @@ class _DayState extends State<DailyView> {
 
   TextEditingController nameController;
 
-  _DayState (String n, String k){
+  _DayState (String n, String k, String u){
     //oName = n;
     index = k;
-    user = 'admin';
+    user = u;
     nameController = new TextEditingController(text: n);
     //blocks = List<block>(24);
     //for (int i = 0; i < 24; i++){
