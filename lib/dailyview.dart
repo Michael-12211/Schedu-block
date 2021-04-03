@@ -203,7 +203,7 @@ class _DayState extends State<DailyView> {
                 .width,*/
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             onPressed: () async {
-              await addBlock(context);
+              await addBlockPopup(context);
             },
             child: Text("+",
               textAlign: TextAlign.center,
@@ -267,7 +267,7 @@ class _DayState extends State<DailyView> {
   final TextEditingController _nameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Future<void> addBlock(BuildContext context) async {
+  Future<void> addBlockPopup(BuildContext context) async {
     return await showDialog(
         context: context,
         builder: (context){
@@ -294,6 +294,7 @@ class _DayState extends State<DailyView> {
                   child: Text("ADD"),
                   onTap: () {
                     if (_formKey.currentState.validate()) {
+                      addBlock(_nameController.text);
                       Navigator.of(context).pop();
                     }
                   },
@@ -303,5 +304,62 @@ class _DayState extends State<DailyView> {
           });
         }
     );
+  }
+
+  addBlock(String name) {
+    print ("the block is " + name);
+
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][user]['schedules'][index]['nodes'];
+      //print (nodes);
+      //print (index);
+
+      List<String> already = List();
+      var open = List<bool>(25);
+      for (int i = 0; i < 25; i++) {
+        open[i] = true;
+      }
+
+      nodes.forEach((key, value) {
+        already.add(value['id']);
+        print (value['id'] + " is there");
+        for (int i = value['start']; i < value['start'] + value['duration']; i++) {
+          open[i] = false;
+        }
+      });
+
+      int start = 1;
+      for (int i = 1; i < 25; i++){
+        if (open[i]) {
+          start = i;
+          break;
+        }
+      }
+
+      int i = 1;
+      while (true) {
+        if (already.contains("a" + i.toString())){
+          i++;
+        } else {
+          break;
+        }
+      }
+      String id = "a" + i.toString();
+      print ("The chosen id is " + id + ", starting at " + start.toString());
+
+      var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(id);
+
+      currChi.child("colour").set("blue");
+      currChi.child("duration").set(1);
+      currChi.child("id").set(id);
+      currChi.child("name").set(name);
+      currChi.child("start").set(start);
+
+      currChi = currChi.child("tags");
+      currChi.child("a1").set("welcome");
+
+      loadData(true);
+    });
   }
 }
