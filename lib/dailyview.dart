@@ -179,13 +179,17 @@ class _DayState extends State<DailyView> {
 
     final nameField = TextField(
         controller: nameController,
+        onChanged: (text) {
+          print ("name changed to " + text);
+          database.child('users').child(user).child('schedules').child(index).child('name').set(text);
+        },
         obscureText: false,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             hintText: "Schedule name",
 
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
-        )
+        ),
     );
 
     final backButton = Material(
