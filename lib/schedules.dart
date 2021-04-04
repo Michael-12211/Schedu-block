@@ -28,13 +28,8 @@ class _SchedulesState extends State<Schedules> {
       () => 'Data Loaded'
   );
 
-  _SchedulesState (String u) {
-    uName = u;
-    print ("uName: " + uName);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  loadData (bool re) {
+    schedules.clear();
 
     database.once().then((DataSnapshot snapshot) {
       //print ('Data : ${snapshot.value}');
@@ -68,32 +63,27 @@ class _SchedulesState extends State<Schedules> {
             }
         ));
       });
+
+      if (re) {
+        print ("resetting");
+        setState(() {
+
+        });
+      }
     });
+  }
 
-    //sleep(Duration(seconds: 3));
+  _SchedulesState (String u) {
+    uName = u;
+    print ("uName: " + uName);
+    loadData(false);
+  }
 
-    /*for (var i = 0; i < 9; i++){
-      MaterialButton m = ( MaterialButton(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 90,
-              width: 60,
-              child: Image(image: AssetImage('images/Logo.PNG')),
-            ),
-            Text("name: " + i.toString())
-          ],
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => DailyView(oName: "Name: " + i.toString())),
-          );
-        }
-      ));
-      //var m = Text("test");
-      schedules.add(m);
-    }*/
+  @override
+  Widget build(BuildContext context) {
+
+    //loadData(false);
+
 
     print ('making scaffold');
     return Scaffold(
@@ -111,6 +101,7 @@ class _SchedulesState extends State<Schedules> {
                     isAlwaysShown: true,
                     child: FutureBuilder<String>(
                       future: _wait,
+                      key: UniqueKey(),
                       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                         if (snapshot.hasData) {
                           return GridView.count(
@@ -125,25 +116,93 @@ class _SchedulesState extends State<Schedules> {
                     )
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('<'),
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18)
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('<'),
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18)
+                          )
                         )
-                      )
+                      ),
                     ),
-                  ),
+                      ElevatedButton(
+                        onPressed: () {
+                          addSchedule();
+                          //MaterialPageRoute(builder: (context) => DailyView(oName: "example", identifier: "a1", uName: uName,));
+                        },
+                        child: Text('+'),
+                        style: ButtonStyle(
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18)
+                                )
+                            )
+                        ),
+                      ),
+                  ]
                 )
               ],
             )
         )
     );
+  }
+
+  addSchedule () {
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][uName]['schedules'];
+      //print (nodes);
+      //print (index);
+
+      List<String> already = List();
+
+      nodes.forEach((key, value) {
+        already.add(value['id']);
+        print (value['id'] + " is there");
+      });
+
+      int i = 1;
+      while (true) {
+        if (already.contains("a" + i.toString())){
+          i++;
+        } else {
+          break;
+        }
+      }
+      String id = "a" + i.toString();
+      print ("The chosen id is " + id);
+
+      var currChi = database.child('users').child(uName).child('schedules').child(id);
+
+      currChi.child("id").set(id);
+      currChi.child("name").set("example");
+
+      currChi = currChi.child("nodes").child("a1");
+
+      currChi.child("colour").set("blue");
+      currChi.child("duration").set(2);
+      currChi.child("id").set("a1");
+      currChi.child("name").set("first");
+      currChi.child("start").set(5);
+
+      currChi = currChi.child("tags");
+      currChi.child("a1").set("welcome");
+
+      print ("this is being called");
+      //loadData(true);
+      Navigator.push(
+        context,
+          MaterialPageRoute(builder: (context) => DailyView(oName: "example", identifier: id, uName: uName,))
+      );
+      loadData(true);
+      //return id;
+    });
   }
 }
