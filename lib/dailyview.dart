@@ -202,6 +202,7 @@ class _DayState extends State<DailyView> {
                 .size
                 .width,*/
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            minWidth: 10,
             onPressed: () {
               Navigator.pop(context);
             },
@@ -221,6 +222,7 @@ class _DayState extends State<DailyView> {
                 .size
                 .width,*/
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            minWidth: 10,
             onPressed: () async {
               await addBlockPopup(context);
             },
@@ -240,12 +242,34 @@ class _DayState extends State<DailyView> {
                 .size
                 .width,*/
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            minWidth: 10,
             onPressed: () async {
               var currChi = database.child('users').child(user).child('schedules').child(index);
               currChi.remove();
               Navigator.pop(context);
             },
             child: Text("X",
+              textAlign: TextAlign.center,
+            )
+        )
+    );
+
+    final favButton = Material(
+        elevation: 5.0,
+        borderRadius: BorderRadius.circular(30),
+        color: Color(0xff01A0C7),
+        child: MaterialButton(
+          /*minWidth: MediaQuery
+                .of(context)
+                .size
+                .width,*/
+            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            minWidth: 10,
+            onPressed: () {
+              var currChi = database.child('users').child(user).child('favorite');
+              currChi.set(index);
+            },
+            child: Text("^",
               textAlign: TextAlign.center,
             )
         )
@@ -291,9 +315,11 @@ class _DayState extends State<DailyView> {
                           )
                       ),
                       Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           backButton,
                           addButton,
+                          favButton,
                           deleteButton
                         ]
                       )
