@@ -332,6 +332,7 @@ class _DayState extends State<DailyView> {
   }
 
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _durationController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<void> addBlockPopup(BuildContext context) async {
@@ -351,6 +352,13 @@ class _DayState extends State<DailyView> {
                         return value.isNotEmpty ? null : "Enter any text";
                       },
                       decoration: InputDecoration(hintText: "Enter block name"),
+                    ),
+                    TextFormField(
+                      controller: _durationController,
+                      validator: (value) {
+                        return value.isNotEmpty ? null : "Enter any text";
+                      },
+                      decoration: InputDecoration(hintText: "Enter block duration"),
                     )
                   ],
                 )
@@ -361,7 +369,7 @@ class _DayState extends State<DailyView> {
                   child: Text("ADD"),
                   onTap: () {
                     if (_formKey.currentState.validate()) {
-                      addBlock(_nameController.text);
+                      addBlock(_nameController.text, int.parse(_durationController.text));
                       Navigator.of(context).pop();
                     }
                   },
@@ -373,7 +381,7 @@ class _DayState extends State<DailyView> {
     );
   }
 
-  addBlock(String name) {
+  addBlock(String name, int dur) {
     print ("the block is " + name);
 
     database.once().then((DataSnapshot snapshot) {
@@ -418,7 +426,7 @@ class _DayState extends State<DailyView> {
       var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(id);
 
       currChi.child("colour").set("blue");
-      currChi.child("duration").set(1);
+      currChi.child("duration").set(dur);
       currChi.child("id").set(id);
       currChi.child("name").set(name);
       currChi.child("start").set(start);
