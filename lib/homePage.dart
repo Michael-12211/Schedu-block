@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:schedu_block/dailyview.dart';
 import 'package:schedu_block/schedules.dart';
 import 'package:schedu_block/weekview.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class HomePage extends StatelessWidget {
-  String favorite = "test";
   String uName;
+
+  final database = FirebaseDatabase.instance.reference();
 
   HomePage (String n){
     uName = n;
@@ -61,10 +63,11 @@ class HomePage extends StatelessWidget {
                       SizedBox(width: MediaQuery.of(context).size.width * 0.3),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          /*Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => DailyView(oName: favorite,)),
-                          );
+                          );*/
+                          loadFavorite(context);
                         },
                         child: Column (
                           children: [
@@ -83,5 +86,20 @@ class HomePage extends StatelessWidget {
             )
         )
     );
+  }
+
+  loadFavorite(BuildContext context) {
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][uName];
+      var fav = nodes['favorite'];
+      var id = nodes['schedules'][fav]['id'];
+      var name = nodes['schedules'][fav]['name'];
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: uName,)),
+      );
+    });
   }
 }
