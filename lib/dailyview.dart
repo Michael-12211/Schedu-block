@@ -230,6 +230,27 @@ class _DayState extends State<DailyView> {
         )
     );
 
+    final deleteButton = Material(
+        elevation: 5.0,
+        borderRadius: BorderRadius.circular(30),
+        color: Color(0xff01A0C7),
+        child: MaterialButton(
+          /*minWidth: MediaQuery
+                .of(context)
+                .size
+                .width,*/
+            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            onPressed: () async {
+              var currChi = database.child('users').child(user).child('schedules').child(index);
+              currChi.remove();
+              Navigator.pop(context);
+            },
+            child: Text("X",
+              textAlign: TextAlign.center,
+            )
+        )
+    );
+
     return Scaffold(
         body: Center(
           child: Container(
@@ -272,7 +293,8 @@ class _DayState extends State<DailyView> {
                       Row(
                         children: [
                           backButton,
-                          addButton
+                          addButton,
+                          deleteButton
                         ]
                       )
                     ],
