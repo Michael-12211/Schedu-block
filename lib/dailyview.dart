@@ -118,13 +118,16 @@ class _DayState extends State<DailyView> {
         }
       });
 
+      String am = "am";
       for (int i = 1; i <= 24; i++) {
+        if (i >= 12)
+          am = "pm";
         schedData.add(SpannableGridCellData(
             id: "time " + i.toString(),
             column: 1,
             row: i,
             child: Container(
-                child: Text((((i - 1) % 12) + 1).toString() + ":00")
+                child: Text((((i - 1) % 12) + 1).toString() + ":00" + am)
             )
         ));
         if (!occupied[i]) {
@@ -269,7 +272,7 @@ class _DayState extends State<DailyView> {
               var currChi = database.child('users').child(user).child('favorite');
               currChi.set(index);
             },
-            child: Text("^",
+            child: Text("#",
               textAlign: TextAlign.center,
             )
         )
