@@ -53,11 +53,13 @@ class _WeekState extends State<WeekView>{
         String tod = d[days[b]];
 
         Widget but;
-
-
         String disp = "Not Set";
-        if (tod != "0") {
+        Color col = Colors.grey;
+
+        if (tod != "0") { //if a schedule is set
           disp = nodes['schedules'][tod]['name'];
+
+          col = Colors.blue;
 
           but = Material(
               elevation: 5.0,
@@ -67,14 +69,14 @@ class _WeekState extends State<WeekView>{
                   padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
                   minWidth: 10,
                   onPressed: () async {
-                    //await addBlockPopup(context);
+                    loadThis(context, tod);
                   },
                   child: Text("i",
                     textAlign: TextAlign.center,
                   )
               )
           );
-        } else {
+        } else { //if no schedule is set
           but = Material(
               elevation: 5.0,
               borderRadius: BorderRadius.circular(30),
@@ -95,7 +97,7 @@ class _WeekState extends State<WeekView>{
         scheds.add (Container(
           width: MediaQuery.of(context).size.width * 0.7,
           height: MediaQuery.of(context).size.height * 0.1,
-          color: Colors.blue,
+          color: col,
           child: Column (
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -168,5 +170,19 @@ class _WeekState extends State<WeekView>{
             )
         )
     );
+  }
+
+  loadThis (BuildContext context, String cur) {
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][user];
+      var id = nodes['schedules'][cur]['id'];
+      var name = nodes['schedules'][cur]['name'];
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: user,)),
+      );
+    });
   }
 }
