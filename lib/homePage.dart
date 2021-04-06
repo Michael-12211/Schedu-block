@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => WeekView()),
+                        MaterialPageRoute(builder: (context) => WeekView(uName: uName,)),
                       );
                     },
                     child: SizedBox(
