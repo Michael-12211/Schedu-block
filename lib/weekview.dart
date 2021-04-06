@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:schedu_block/dailyview.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:spannable_grid/spannable_grid.dart';
 
 class WeekView extends StatefulWidget {
   String uName;
@@ -17,35 +18,94 @@ class _WeekState extends State<WeekView>{
 
   String user;
 
-  TextEditingController nameController;
+  List<String> days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+  //List<SpannableGridCellData> schedData = List();
+  List<Widget> scheds = List();
 
   _WeekState(String u) {
     user = u;
-    //loadData(false);
+    loadData(false);
+  }
+
+  final Future<String> _wait = Future<String>.delayed(
+      Duration(milliseconds: 500),
+          () => 'Data Loaded'
+  );
+
+  loadData (bool re) {
+    //schedData.clear();
+    scheds.clear();
+
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][user]['days'];
+
+      int Today = 0;
+
+      scheds.add (Container(
+        height: MediaQuery.of(context).size.height * 0.03,
+      ));
+
+      int b = Today;
+      for (int i = 0; i < 7; i++){
+        String tod = nodes[days[b]];
+
+        //String
+
+        scheds.add (Container(
+          width: MediaQuery.of(context).size.width * 0.7,
+          height: MediaQuery.of(context).size.height * 0.1,
+          color: Colors.blue,
+          child: Column (
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(days[b]),
+              Text(""),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("a"),
+                  Text("b")
+                ],
+              )
+            ],
+          )
+        ));
+        scheds.add (Container(
+          height: MediaQuery.of(context).size.height * 0.01,
+        ));
+
+        b++;
+        b%=7;
+      }
+
+      scheds.add(Material(
+          elevation: 5.0,
+          borderRadius: BorderRadius.circular(30),
+          color: Color(0xff01A0C7),
+          child: MaterialButton(
+            /*minWidth: MediaQuery
+                .of(context)
+                .size
+                .width,*/
+              padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("<",
+                textAlign: TextAlign.center,
+              )
+          )
+        )
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
 
 
-    final backButton = Material(
-        elevation: 5.0,
-        borderRadius: BorderRadius.circular(30),
-        color: Color(0xff01A0C7),
-        child: MaterialButton(
-          /*minWidth: MediaQuery
-                .of(context)
-                .size
-                .width,*/
-            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text("<",
-              textAlign: TextAlign.center,
-            )
-        )
-    );
 
     return Scaffold(
         body: Center(
@@ -53,40 +113,17 @@ class _WeekState extends State<WeekView>{
                 color: Colors.white,
                 child: Padding(
                     padding: const EdgeInsets.all(36),
-                    child: Column(
-                      children: [
-                        Container(
-                            height: MediaQuery.of(context).size.height * 0.7,
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            margin: EdgeInsets.all(15.0),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 2.0,
-                                    color: Colors.black
-                                )
-                            ),
-                            child: ListView(
-                                physics: AlwaysScrollableScrollPhysics(),
-                                /*children: [FutureBuilder<String>(
-                                    future: _wait,
-                                    builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                                      if (snapshot.hasData) {
-                                        return SpannableGrid(
-                                            columns: 2,
-                                            rows: 24,
-                                            spacing: 2.0,
-                                            rowHeight: 50,
-                                            cells: schedData
-                                        );
-                                      } else {
-                                        return CircularProgressIndicator();
-                                      }
-                                    }
-                                )]*/
-                            )
-                        ),
-                        backButton,
-                      ],
+                    child: FutureBuilder<String>(
+                      future: _wait,
+                      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData) {
+                          return Column (
+                            children: scheds,
+                          );
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      }
                     )
                 )
             )
