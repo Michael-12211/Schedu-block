@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:schedu_block/dailyview.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:spannable_grid/spannable_grid.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class WeekView extends StatefulWidget {
   String uName;
@@ -79,6 +79,7 @@ class _WeekState extends State<WeekView>{
               )
           );
         } else { //if no schedule is set
+          int curB = b;
           but = Material(
               elevation: 5.0,
               borderRadius: BorderRadius.circular(30),
@@ -88,6 +89,7 @@ class _WeekState extends State<WeekView>{
                   minWidth: 10,
                   onPressed: () async {
                     //await addBlockPopup(context);
+                    addSchedPopup (context, curB);
                   },
                   child: Text("+",
                     textAlign: TextAlign.center,
@@ -186,5 +188,100 @@ class _WeekState extends State<WeekView>{
         MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: user,)),
       );
     });
+  }
+
+  final TextEditingController _nameController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
+
+  Future<void> addSchedPopup(BuildContext context, int when) async {
+    return await showDialog(
+        context: context,
+        builder: (context){
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              content: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        validator: (value) {
+                          return value.isNotEmpty ? null : "Enter any text";
+                        },
+                        decoration: InputDecoration(hintText: "Enter block name"),
+                      ),
+                    ],
+                  )
+              ),
+              title: Text("Add block"),
+              actions: <Widget>[
+                InkWell(
+                  child: Text("ADD"),
+                  onTap: () {
+                    if (_formKey.currentState.validate()) {
+                      addHere(context, _nameController.text, when);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                )
+              ],
+            );
+          });
+        }
+    );
+  }
+
+  addHere (BuildContext context, String what, int when) {
+    print ("yes");
+
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][user]['schedules'];
+
+      bool miss = true;
+
+      nodes.forEach((key, value) {
+        print (value['name'] + " is there");
+        if (value['name'] == what) {
+          print ("match!");
+          miss = false;
+          print (when);
+          database.child('users').child(user).child('days').child(days[when]).set(value['id']);
+        }
+      });
+
+      if (miss){
+        failPopup(context);
+      }
+
+      loadData(true);
+    });
+  }
+
+  Future<void> failPopup(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        builder: (context){
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              content: Form(
+                  key: _formKey2,
+                  child: Text("No schedule matches that name")
+              ),
+              title: Text("Add block"),
+              actions: <Widget>[
+                InkWell(
+                  child: Text("OK"),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+        }
+    );
   }
 }
