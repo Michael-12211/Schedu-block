@@ -169,13 +169,13 @@ class _SignUpState extends State<SignUp> {
     currChi.child("favorite").set("a1");
 
     var days = currChi.child("days");
-    days.child("mon").set(0);
-    days.child("tue").set(0);
-    days.child("wed").set(0);
-    days.child("thu").set(0);
-    days.child("fri").set(0);
-    days.child("sat").set(0);
-    days.child("sun").set(0);
+    days.child("mon").set("0");
+    days.child("tue").set("0");
+    days.child("wed").set("0");
+    days.child("thu").set("0");
+    days.child("fri").set("0");
+    days.child("sat").set("0");
+    days.child("sun").set("0");
 
     currChi = currChi.child("schedules").child("a1");
     currChi.child("id").set("a1");

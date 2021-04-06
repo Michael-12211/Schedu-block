@@ -39,7 +39,8 @@ class _WeekState extends State<WeekView>{
 
     database.once().then((DataSnapshot snapshot) {
       var map = snapshot.value as Map<dynamic, dynamic>;
-      var nodes = map['users'][user]['days'];
+      var nodes = map['users'][user];
+      var d = nodes['days'];
 
       int Today = 0;
 
@@ -49,9 +50,47 @@ class _WeekState extends State<WeekView>{
 
       int b = Today;
       for (int i = 0; i < 7; i++){
-        String tod = nodes[days[b]];
+        String tod = d[days[b]];
 
-        //String
+        Widget but;
+
+
+        String disp = "Not Set";
+        if (tod != "0") {
+          disp = nodes['schedules'][tod]['name'];
+
+          but = Material(
+              elevation: 5.0,
+              borderRadius: BorderRadius.circular(30),
+              color: Color(0xff31A0C7),
+              child: MaterialButton(
+                  padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  minWidth: 10,
+                  onPressed: () async {
+                    //await addBlockPopup(context);
+                  },
+                  child: Text("i",
+                    textAlign: TextAlign.center,
+                  )
+              )
+          );
+        } else {
+          but = Material(
+              elevation: 5.0,
+              borderRadius: BorderRadius.circular(30),
+              color: Color(0xff31A0C7),
+              child: MaterialButton(
+                  padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  minWidth: 10,
+                  onPressed: () async {
+                    //await addBlockPopup(context);
+                  },
+                  child: Text("+",
+                    textAlign: TextAlign.center,
+                  )
+              )
+          );
+        }
 
         scheds.add (Container(
           width: MediaQuery.of(context).size.width * 0.7,
@@ -61,12 +100,12 @@ class _WeekState extends State<WeekView>{
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(days[b]),
-              Text(""),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("a"),
-                  Text("b")
+                  Text(disp),
+                  //Text("b")
+                  but
                 ],
               )
             ],
