@@ -58,16 +58,19 @@ class _WeekState extends State<WeekView>{
         String disp = "Not Set";
         Color col = Colors.grey;
 
+        int curB = b;
         if (tod != "0") { //if a schedule is set
           disp = nodes['schedules'][tod]['name'];
 
           col = Colors.blue;
 
-          but = Material(
-              elevation: 5.0,
-              borderRadius: BorderRadius.circular(30),
-              color: Color(0xff31A0C7),
-              child: MaterialButton(
+          but = Row(
+            children: [
+              Material(
+                elevation: 5.0,
+                borderRadius: BorderRadius.circular(30),
+                color: Color(0xff31A0C7),
+                child: MaterialButton(
                   padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
                   minWidth: 10,
                   onPressed: () async {
@@ -76,10 +79,33 @@ class _WeekState extends State<WeekView>{
                   child: Text("i",
                     textAlign: TextAlign.center,
                   )
-              )
+                )
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Material(
+                  elevation: 5.0,
+                  borderRadius: BorderRadius.circular(30),
+                  color: Color(0xff31A0C7),
+                  child: MaterialButton(
+                      padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                      minWidth: 10,
+                      onPressed: () async {
+                        removeThis(days[curB]);
+                      },
+                      child: Text("X",
+                        textAlign: TextAlign.center,
+                      )
+                  )
+              ),
+              SizedBox(
+                width: 5,
+              ),
+            ]
           );
         } else { //if no schedule is set
-          int curB = b;
+
           but = Material(
               elevation: 5.0,
               borderRadius: BorderRadius.circular(30),
@@ -144,6 +170,11 @@ class _WeekState extends State<WeekView>{
           )
         )
       );
+      if (re) {
+        setState(() {
+
+        });
+      }
     });
   }
 
@@ -160,6 +191,7 @@ class _WeekState extends State<WeekView>{
                     padding: const EdgeInsets.all(36),
                     child: FutureBuilder<String>(
                       future: _wait,
+                        //key: UniqueKey(),
                       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                         if (snapshot.hasData) {
                           return Column (
@@ -188,6 +220,16 @@ class _WeekState extends State<WeekView>{
         MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: user,)),
       );
     });
+  }
+
+  removeThis (String curDay) async {
+    database.child('users').child(user).child('days').child(curDay).set("0");
+    int d = 0;
+    for (int i = 1; i < 50; i++){
+      d++;
+    }
+    print (d);
+    loadData(true);
   }
 
   final TextEditingController _nameController = TextEditingController();
