@@ -42,7 +42,9 @@ class _WeekState extends State<WeekView>{
       var nodes = map['users'][user];
       var d = nodes['days'];
 
-      int Today = 0;
+      var now = DateTime.now();
+      //print (now.day);
+      int Today = now.day - 1;
 
       scheds.add (Container(
         height: MediaQuery.of(context).size.height * 0.03,
