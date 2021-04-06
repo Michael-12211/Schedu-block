@@ -60,13 +60,25 @@ class HomePage extends StatelessWidget {
                         },
                         child: Text('Schedules')
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.3),
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.1),
+                      ElevatedButton(
+                          onPressed: () {
+                            loadToday(context);
+                          },
+                          child: Column (
+                              children: [
+                                Text('Today'),
+                                SizedBox(
+                                    width: 50,
+                                    height: 100,
+                                    child: Image(image: AssetImage('images/Logo.PNG'))
+                                )
+                              ]
+                          )
+                      ),
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.1),
                       ElevatedButton(
                         onPressed: () {
-                          /*Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => DailyView(oName: favorite,)),
-                          );*/
                           loadFavorite(context);
                         },
                         child: Column (
@@ -93,6 +105,28 @@ class HomePage extends StatelessWidget {
       var map = snapshot.value as Map<dynamic, dynamic>;
       var nodes = map['users'][uName];
       var fav = nodes['favorite'];
+      var id = nodes['schedules'][fav]['id'];
+      var name = nodes['schedules'][fav]['name'];
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: uName,)),
+      );
+    });
+  }
+
+  loadToday(BuildContext context) {
+    List<String> days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][uName];
+
+      var now = DateTime.now();
+      //print (now.day);
+      int Today = now.day - 1;
+
+      var fav = nodes['days'][days[Today]];
       var id = nodes['schedules'][fav]['id'];
       var name = nodes['schedules'][fav]['name'];
 
