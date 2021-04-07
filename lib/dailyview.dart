@@ -77,6 +77,22 @@ class _DayState extends State<DailyView> {
 
         List<String> tags;
 
+        Color col = Colors.blue; //default is blue in case an incorrect color is enterred
+
+        switch(value['colour']) {
+          case 'grey': {
+            col = Colors.grey;
+          }
+          break;
+          case 'red': {
+            col = Colors.red;
+          }
+          break;
+          case 'green': {
+            col = Colors.green;
+          }
+        }
+
         block curr = block(value['id'],value['name'],value['duration'],[],value['colour'],value['start']);
         //value.forEa
 
@@ -88,7 +104,7 @@ class _DayState extends State<DailyView> {
           child: Draggable<block>(
             data: curr,
             child: Container(
-                color: Colors.blue,
+                color: col,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
