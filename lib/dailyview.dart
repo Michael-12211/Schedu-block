@@ -354,6 +354,8 @@ class _DayState extends State<DailyView> {
   final TextEditingController _durationController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  String dVal = 'blue';
+
   Future<void> addBlockPopup(BuildContext context) async {
     return await showDialog(
         context: context,
@@ -378,6 +380,28 @@ class _DayState extends State<DailyView> {
                         return value.isNotEmpty ? null : "Enter any text";
                       },
                       decoration: InputDecoration(hintText: "Enter block duration"),
+                    ),
+                    DropdownButton<String>(
+                      value: dVal,
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        underline: Container(
+                          height: 2,
+                          color: Colors.black
+                        ),
+                        onChanged: (String newValue) {
+                          setState(() {
+                            dVal = newValue;
+                          });
+                        },
+                        items: <String>['blue', 'grey', 'red', 'green']
+                        .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value)
+                          );
+                        }).toList()
                     )
                   ],
                 )
@@ -388,7 +412,7 @@ class _DayState extends State<DailyView> {
                   child: Text("ADD"),
                   onTap: () {
                     if (_formKey.currentState.validate()) {
-                      addBlock(_nameController.text, int.parse(_durationController.text));
+                      addBlock(_nameController.text, int.parse(_durationController.text), dVal);
                       Navigator.of(context).pop();
                     }
                   },
@@ -400,7 +424,7 @@ class _DayState extends State<DailyView> {
     );
   }
 
-  addBlock(String name, int dur) {
+  addBlock(String name, int dur, String col) {
     print ("the block is " + name);
 
     database.once().then((DataSnapshot snapshot) {
@@ -444,7 +468,7 @@ class _DayState extends State<DailyView> {
 
       var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(id);
 
-      currChi.child("colour").set("blue");
+      currChi.child("colour").set(col);
       currChi.child("duration").set(dur);
       currChi.child("id").set(id);
       currChi.child("name").set(name);
