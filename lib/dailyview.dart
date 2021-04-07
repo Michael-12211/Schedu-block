@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spannable_grid/spannable_grid.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 
 class DailyView extends StatefulWidget {
@@ -263,9 +264,7 @@ class _DayState extends State<DailyView> {
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             minWidth: 10,
             onPressed: () async {
-              var currChi = database.child('users').child(user).child('schedules').child(index);
-              currChi.remove();
-              Navigator.pop(context);
+              deletePopup(context);
             },
             child: Text("X",
               textAlign: TextAlign.center,
@@ -287,6 +286,7 @@ class _DayState extends State<DailyView> {
             onPressed: () {
               var currChi = database.child('users').child(user).child('favorite');
               currChi.set(index);
+              Alert(context: context, title: "Schedule marked as favorite", desc: "This schedule can now be accessed from the home page").show();
             },
             child: Text("#",
               textAlign: TextAlign.center,
@@ -479,5 +479,38 @@ class _DayState extends State<DailyView> {
 
       loadData(true);
     });
+  }
+
+  Future<void> deletePopup(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        builder: (context){
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              content: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+                    ],
+                  )
+              ),
+              title: Text("Delete schdule?"),
+              actions: <Widget>[
+                InkWell(
+                  child: Text("Delete"),
+                  onTap: () {
+                    var currChi = database.child('users').child(user).child('schedules').child(index);
+                    currChi.remove();
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            );
+          });
+        }
+    );
   }
 }
