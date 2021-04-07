@@ -42,9 +42,19 @@ class _SchedulesState extends State<Schedules> {
       //print (name);
       //print (scheds);
 
+      var fav = map['users'][uName]['favorite'];
+
       scheds.forEach((key, value) {
+
+        Color col = Colors.blue;
+        if (value['id'] == fav) {
+          col = Colors.yellow;
+        }
+
         print ('the schedule is: ' + value['name']);
-        schedules.add( MaterialButton(
+        schedules.add( Container (
+          color: col,
+          child: MaterialButton(
             child: Column(
               children: [
                 SizedBox(
@@ -62,7 +72,8 @@ class _SchedulesState extends State<Schedules> {
               );
               loadData(true);
             }
-        ));
+          ))
+        );
       });
 
       if (re) {
