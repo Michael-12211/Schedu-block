@@ -55,11 +55,12 @@ class _SchedulesState extends State<Schedules> {
                 Text(value['name'])
               ],
             ),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => DailyView(oName: value['name'], identifier: value['id'], uName: uName,)),
               );
+              loadData(true);
             }
         ));
       });
@@ -155,7 +156,7 @@ class _SchedulesState extends State<Schedules> {
   }
 
   addSchedule () {
-    database.once().then((DataSnapshot snapshot) {
+    database.once().then((DataSnapshot snapshot) async {
       var map = snapshot.value as Map<dynamic, dynamic>;
       var nodes = map['users'][uName]['schedules'];
       //print (nodes);
@@ -197,7 +198,7 @@ class _SchedulesState extends State<Schedules> {
 
       print ("this is being called");
       //loadData(true);
-      Navigator.push(
+      await Navigator.push(
         context,
           MaterialPageRoute(builder: (context) => DailyView(oName: "example", identifier: id, uName: uName,))
       );

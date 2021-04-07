@@ -208,17 +208,19 @@ class _WeekState extends State<WeekView>{
     );
   }
 
-  loadThis (BuildContext context, String cur) {
-    database.once().then((DataSnapshot snapshot) {
+  loadThis (BuildContext context, String cur) async {
+    database.once().then((DataSnapshot snapshot) async {
       var map = snapshot.value as Map<dynamic, dynamic>;
       var nodes = map['users'][user];
       var id = nodes['schedules'][cur]['id'];
       var name = nodes['schedules'][cur]['name'];
 
-      Navigator.push(
+      await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: user,)),
       );
+
+      loadData(true);
     });
   }
 
