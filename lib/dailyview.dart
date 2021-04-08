@@ -110,14 +110,26 @@ class _DayState extends State<DailyView> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(" " + curr.name),
-                    MaterialButton(
-                        onPressed: () {
-                          print("Test");
-                          var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(curr.index);
-                          currChi.remove();
-                          loadData(true);
-                        },
-                      child: Text("X", textAlign: TextAlign.right,),
+                    Row(
+                      children: [
+                        MaterialButton(
+                          minWidth: 6,
+                          onPressed: () {
+                            editBlockPopup(context, curr.index, curr.name, curr.duration, curr.Color);
+                          },
+                          child: Text("i", textAlign: TextAlign.right,),
+                        ),
+                        MaterialButton(
+                          minWidth: 6,
+                          onPressed: () {
+                            print("Test");
+                            var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(curr.index);
+                            currChi.remove();
+                            loadData(true);
+                          },
+                          child: Text("X", textAlign: TextAlign.right,),
+                        )
+                      ]
                     )
                   ],
                 )
@@ -354,9 +366,12 @@ class _DayState extends State<DailyView> {
   final TextEditingController _durationController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String dVal = 'blue';
+
 
   Future<void> addBlockPopup(BuildContext context) async {
+
+    String dVal = 'blue';
+
     return await showDialog(
         context: context,
         builder: (context){
@@ -513,4 +528,115 @@ class _DayState extends State<DailyView> {
         }
     );
   }
+
+  Future<void> editBlockPopup(BuildContext context, String index, String currName, int currVal, String currCol) async {
+
+    _nameController.text = currName;
+    _durationController.text = "" + currVal.toString();
+    String dVal = currCol;
+
+    return await showDialog(
+        context: context,
+        builder: (context){
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              content: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        validator: (value) {
+                          return value.isNotEmpty ? null : "Enter any text";
+                        },
+                        decoration: InputDecoration(hintText: "Enter block name"),
+                      ),
+                      TextFormField(
+                        controller: _durationController,
+                        validator: (value) {
+                          return value.isNotEmpty ? null : "Enter any text";
+                        },
+                        decoration: InputDecoration(hintText: "Enter block duration"),
+                      ),
+                      DropdownButton<String>(
+                          value: dVal,
+                          icon: Icon(Icons.arrow_downward),
+                          iconSize: 24,
+                          elevation: 16,
+                          underline: Container(
+                              height: 2,
+                              color: Colors.black
+                          ),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              dVal = newValue;
+                            });
+                          },
+                          items: <String>['blue', 'grey', 'red', 'green']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value)
+                            );
+                          }).toList()
+                      )
+                    ],
+                  )
+              ),
+              title: Text("Edit block"),
+              actions: <Widget>[
+                InkWell(
+                  child: Text("Confirm"),
+                  onTap: () {
+                    if (_formKey.currentState.validate()) {
+                      editBlock(index, _nameController.text, int.parse(_durationController.text), dVal);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                )
+              ],
+            );
+          });
+        }
+    );
+  }
+
+  editBlock(String id, String name, int dur, String col) {
+    print ("the block is " + name);
+
+    database.once().then((DataSnapshot snapshot) {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][user]['schedules'][index]['nodes'];
+      //print (nodes);
+      //print (index);
+
+      List<String> already = List();
+      var open = List<bool>(25);
+      for (int i = 0; i < 25; i++) {
+        open[i] = true;
+      }
+
+      nodes.forEach((key, value) {
+        already.add(value['id']);
+        print (value['id'] + " is there");
+        for (int i = value['start']; i < value['start'] + value['duration']; i++) {
+          open[i] = false;
+        }
+      });
+
+      var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(id);
+
+      currChi.child("colour").set(col);
+      currChi.child("duration").set(dur);
+      currChi.child("id").set(id);
+      currChi.child("name").set(name);
+
+      currChi = currChi.child("tags");
+      currChi.child("a1").set("welcome");
+
+      loadData(true);
+    });
+  }
+
 }
