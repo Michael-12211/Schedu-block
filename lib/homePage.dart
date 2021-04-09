@@ -71,7 +71,7 @@ class HomePage extends StatelessWidget {
                                 SizedBox(
                                     width: 50,
                                     height: 100,
-                                    child: Image(image: AssetImage('images/Logo.PNG'))
+                                    child: Image(image: AssetImage('images/Icon.PNG'))
                                 )
                               ]
                           )
@@ -87,7 +87,7 @@ class HomePage extends StatelessWidget {
                             SizedBox(
                               width: 50,
                               height: 100,
-                              child: Image(image: AssetImage('images/Logo.PNG'))
+                              child: Image(image: AssetImage('images/Icon.PNG'))
                             )
                           ]
                         )

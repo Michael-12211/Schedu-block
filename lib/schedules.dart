@@ -24,7 +24,7 @@ class _SchedulesState extends State<Schedules> {
   var schedules = <Widget>[];
 
   final Future<String> _wait = Future<String>.delayed(
-      Duration(milliseconds: 500),
+      Duration(milliseconds: 600),
       () => 'Data Loaded'
   );
 
@@ -60,7 +60,7 @@ class _SchedulesState extends State<Schedules> {
                 SizedBox(
                   height: 90,
                   width: 60,
-                  child: Image(image: AssetImage('images/Logo.PNG')),
+                  child: Image(image: AssetImage('images/Icon.PNG')),
                 ),
                 Text(value['name'])
               ],
