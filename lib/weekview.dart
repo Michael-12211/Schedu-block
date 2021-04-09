@@ -35,6 +35,7 @@ class _WeekState extends State<WeekView>{
 
   loadData (bool re) {
     //schedData.clear();
+    print ("Loading data");
     scheds.clear();
 
     database.once().then((DataSnapshot snapshot) {
@@ -44,13 +45,14 @@ class _WeekState extends State<WeekView>{
 
       var now = DateTime.now();
       //print (now.day);
-      int Today = now.day - 1;
+      int Today = now.day + 2;
 
       scheds.add (Container(
         height: MediaQuery.of(context).size.height * 0.03,
       ));
 
       int b = Today;
+      b%=7;
       for (int i = 0; i < 7; i++){
         String tod = d[days[b]];
 
@@ -148,28 +150,11 @@ class _WeekState extends State<WeekView>{
         ));
 
         b++;
-        b%=7;
+        b = b%7;
       }
 
-      scheds.add(Material(
-          elevation: 5.0,
-          borderRadius: BorderRadius.circular(30),
-          color: Color(0xff01A0C7),
-          child: MaterialButton(
-            /*minWidth: MediaQuery
-                .of(context)
-                .size
-                .width,*/
-              padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("<",
-                textAlign: TextAlign.center,
-              )
-          )
-        )
-      );
+      print ("Done loading");
+
       if (re) {
         setState(() {
 
@@ -181,7 +166,7 @@ class _WeekState extends State<WeekView>{
   @override
   Widget build(BuildContext context) {
 
-
+    print ("making scaffold");
 
     return Scaffold(
         body: Center(
@@ -189,19 +174,36 @@ class _WeekState extends State<WeekView>{
                 color: Colors.white,
                 child: Padding(
                     padding: const EdgeInsets.all(36),
-                    child: FutureBuilder<String>(
-                      future: _wait,
-                        //key: UniqueKey(),
-                      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                        if (snapshot.hasData) {
-                          return Column (
-                            children: scheds,
-                          );
-                        } else {
-                          return CircularProgressIndicator();
+                    child: Column (
+                    children: [
+                      FutureBuilder<String>(
+                        future: _wait,
+                          key: UniqueKey(),
+                        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                          if (snapshot.hasData) {
+                            return Column (
+                              children: scheds,
+                            );
+                          } else {
+                            return CircularProgressIndicator();
+                          }
                         }
-                      }
-                    )
+                      ),
+                      Material(
+                          elevation: 5.0,
+                          borderRadius: BorderRadius.circular(30),
+                          color: Color(0xff01A0C7),
+                          child: MaterialButton(
+                              padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text("<",
+                                textAlign: TextAlign.center,
+                              )
+                          )
+                      )
+                    ])
                 )
             )
         )

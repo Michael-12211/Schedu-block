@@ -124,7 +124,7 @@ class HomePage extends StatelessWidget {
 
       var now = DateTime.now();
       //print (now.day);
-      int Today = now.day - 1;
+      int Today = (now.day + 2)%7;
 
       var fav = nodes['days'][days[Today]];
       var id = nodes['schedules'][fav]['id'];
