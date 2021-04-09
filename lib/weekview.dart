@@ -59,10 +59,12 @@ class _WeekState extends State<WeekView>{
         Widget but;
         String disp = "Not Set";
         Color col = Colors.grey;
+        double size = 15;
 
         int curB = b;
         if (tod != "0") { //if a schedule is set
           disp = nodes['schedules'][tod]['name'];
+          size = 25;
 
           col = Colors.blue;
 
@@ -137,7 +139,9 @@ class _WeekState extends State<WeekView>{
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(disp),
+                  Text(disp,
+                    style: TextStyle(fontSize: size),
+                  ),
                   //Text("b")
                   but
                 ],
