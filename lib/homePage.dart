@@ -43,7 +43,17 @@ class HomePage extends StatelessWidget {
                     child: SizedBox(
                         height: 205,
                         width: MediaQuery.of(context).size.width * 0.7,
-                        child: Image(image: AssetImage('images/Logo.PNG'))
+                        child: Column (
+                          children: [
+                            SizedBox(
+                              //width and height set with the same calculation
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                height: MediaQuery.of(context).size.width * 0.4,
+                              child: Image(image: AssetImage('images/Icon.PNG'))
+                            ),
+                            Text("Week View", style: TextStyle(fontSize: 30))
+                          ]
+                        )
                     ),
                 ),
                 SizedBox(height: 100),
@@ -58,16 +68,16 @@ class HomePage extends StatelessWidget {
                             MaterialPageRoute(builder: (context) => Schedules(uName: uName)),
                           );
                         },
-                        child: Text('Schedules')
+                        child: Text('Schedules', style: TextStyle(fontSize: 20))
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.1),
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.06),
                       ElevatedButton(
                           onPressed: () {
                             loadToday(context);
                           },
                           child: Column (
                               children: [
-                                Text('Today'),
+                                Text('Today', style: TextStyle(fontSize: 20)),
                                 SizedBox(
                                     width: 50,
                                     height: 100,
@@ -76,14 +86,14 @@ class HomePage extends StatelessWidget {
                               ]
                           )
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.1),
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.06),
                       ElevatedButton(
                         onPressed: () {
                           loadFavorite(context);
                         },
                         child: Column (
                           children: [
-                            Text('Favorite'),
+                            Text('Favorite', style: TextStyle(fontSize: 20)),
                             SizedBox(
                               width: 50,
                               height: 100,

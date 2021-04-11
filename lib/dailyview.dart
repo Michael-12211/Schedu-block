@@ -5,9 +5,9 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 
 class DailyView extends StatefulWidget {
-  String oName;
-  String identifier;
-  String uName;
+  String oName; //Origional name of the schedule
+  String identifier; //id of the schedfule to find it in the database
+  String uName; //username to access their side of the database
   DailyView({Key key, this.title, @required this.oName, @required this.identifier, @required this.uName}) : super(key: key);
   final String title;
 
@@ -15,7 +15,7 @@ class DailyView extends StatefulWidget {
   _DayState createState() => _DayState(oName, identifier, uName);
 }
 
-class block {
+class block { //stores information for blocks
   String index;
   String name;
   int duration;
@@ -26,9 +26,9 @@ class block {
   }
 }
 
-class _DayState extends State<DailyView> {
+class _DayState extends State<DailyView> { //state for the schedules page
 
-  final database = FirebaseDatabase.instance.reference();
+  final database = FirebaseDatabase.instance.reference(); //storing the frebase access
 
   //String oName;
   String index;
@@ -113,14 +113,14 @@ class _DayState extends State<DailyView> {
                     Row(
                       children: [
                         MaterialButton(
-                          minWidth: 6,
+                          minWidth: 2,
                           onPressed: () {
                             editBlockPopup(context, curr.index, curr.name, curr.duration, curr.Color);
                           },
                           child: Text("i", textAlign: TextAlign.right,),
                         ),
                         MaterialButton(
-                          minWidth: 6,
+                          minWidth: 2,
                           onPressed: () {
                             print("Test");
                             var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(curr.index);
@@ -212,9 +212,16 @@ class _DayState extends State<DailyView> {
     final nameField = TextField(
         controller: nameController,
         onChanged: (text) {
-          print ("name changed to " + text);
-          database.child('users').child(user).child('schedules').child(index).child('name').set(text);
-        },
+          if (text.length <= 9) { //prevents text overflow on schedules page
+            print("name changed to " + text);
+            database.child('users').child(user).child('schedules')
+                .child(index)
+                .child('name')
+                .set(text);
+          } /*else {
+            Alert(context: context, title: "Name length exceeded", desc: "Names can only have up to 9 characters").show();
+          }*/
+          },
         obscureText: false,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
