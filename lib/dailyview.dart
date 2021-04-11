@@ -102,6 +102,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
           column: 2,
           row: value['start'],
           rowSpan: value['duration'],
+          columnSpan: 3,
           child: Draggable<block>(
             data: curr,
             child: Container(
@@ -164,6 +165,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
               id: "dest" + i.toString(),
               column: 2,
               row: i,
+              columnSpan: 3,
               child: DragTarget<block>(
                 builder: (BuildContext context,
                     List<dynamic> accepted,
@@ -339,7 +341,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
                                 builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                                   if (snapshot.hasData) {
                                     return SpannableGrid(
-                                        columns: 2,
+                                        columns: 4,
                                         rows: 24,
                                         spacing: 2.0,
                                         rowHeight: 50,
