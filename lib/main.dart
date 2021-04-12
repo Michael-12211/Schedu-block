@@ -159,7 +159,7 @@ class _LoginState extends State<LoginPage> {
   void savePref (String username) async {
     final prefs = await SharedPreferences.getInstance();
 
-    prefs.setString('user', username);
+    prefs.setString('schedu_block_user', username);
 
     print ("saved " + username);
   }
@@ -167,7 +167,7 @@ class _LoginState extends State<LoginPage> {
   void autoLogin () async {
     final prefs = await SharedPreferences.getInstance();
 
-    String saved = prefs.getString('user') ?? "not logged in";
+    String saved = prefs.getString('schedu_block_user') ?? "not logged in";
 
     if (saved != "not logged in") {
       print (saved + "was automatically logged in!");

@@ -54,15 +54,16 @@ class _SchedulesState extends State<Schedules> {
         print ('the schedule is: ' + value['name']);
         schedules.add( Container (
           color: col,
+          //height: 300,
           child: MaterialButton(
             child: Column(
               children: [
                 SizedBox(
-                  height: 90,
-                  width: 60,
+                  height: 80,
+                  width: 50,
                   child: Image(image: AssetImage('images/Icon.PNG')),
                 ),
-                Text(value['name'])
+                Text(value['name'], style: TextStyle(fontSize: 17))
               ],
             ),
             onPressed: () async {
@@ -107,7 +108,7 @@ class _SchedulesState extends State<Schedules> {
               children: [
 
                 SizedBox(
-                  height: 500,
+                  height: MediaQuery.of(context).size.height * 0.7,
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Scrollbar(
                     isAlwaysShown: true,
@@ -118,7 +119,8 @@ class _SchedulesState extends State<Schedules> {
                         if (snapshot.hasData) {
                           return GridView.count(
                               crossAxisCount: 3,
-                              mainAxisSpacing: 80,
+                              childAspectRatio: (5 / 7),
+                              mainAxisSpacing: 20,
                               children: schedules
                           );
                         } else {

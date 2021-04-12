@@ -147,6 +147,8 @@ class _SignUpState extends State<SignUp> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
+                        Text ("Sign up", style: TextStyle(fontSize: 30)),
+                        SizedBox(height: 15),
                         backButton,
                         SizedBox(height: 15),
                         emailField,

@@ -152,7 +152,7 @@ class HomePage extends StatelessWidget {
   void removePreferences () async {
     final prefs = await SharedPreferences.getInstance();
 
-    prefs.remove('user');
+    prefs.remove('schedu_block_user');
 
     print ("the user is no longer persistently logged in");
   }

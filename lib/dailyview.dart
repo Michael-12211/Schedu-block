@@ -110,7 +110,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(" " + curr.name),
+                    Text(" " + curr.name, style: TextStyle(fontSize: 18)),
                     Row(
                       children: [
                         MaterialButton(
@@ -136,10 +136,10 @@ class _DayState extends State<DailyView> { //state for the schedules page
                 )
             ),
             feedback: Container(
-                color: Colors.blue,
+                color: col,
                 height: 100,
                 width: 130,
-                child: Text(curr.name)
+                child: Text(curr.name, style: TextStyle(fontSize: 18, color: Colors.black))
             ),
           ),
         ));
@@ -214,7 +214,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
     final nameField = TextField(
         controller: nameController,
         onChanged: (text) {
-          if (text.length <= 9) { //prevents text overflow on schedules page
+          if (text.length <= 14) { //prevents text overflow on schedules page
             print("name changed to " + text);
             database.child('users').child(user).child('schedules')
                 .child(index)
