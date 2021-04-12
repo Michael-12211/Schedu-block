@@ -315,6 +315,29 @@ class _DayState extends State<DailyView> { //state for the schedules page
         )
     );
 
+    final copyButton = Material(
+        elevation: 5.0,
+        borderRadius: BorderRadius.circular(30),
+        color: Color(0xff01A0C7),
+        child: MaterialButton(
+          /*minWidth: MediaQuery
+                .of(context)
+                .size
+                .width,*/
+            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            minWidth: 10,
+            onPressed: () {
+              copySchedule();
+              //var currChi = database.child('users').child(user).child('favorite');
+              //currChi.set(index);
+              //Alert(context: context, title: "Schedule marked as favorite", desc: "This schedule can now be accessed from the home page").show();
+            },
+            child: Text("C",
+              textAlign: TextAlign.center,
+            )
+        )
+    );
+
     return Scaffold(
         body: Center(
           child: Container(
@@ -360,6 +383,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
                           backButton,
                           addButton,
                           favButton,
+                          copyButton,
                           deleteButton
                         ]
                       )
@@ -645,6 +669,75 @@ class _DayState extends State<DailyView> { //state for the schedules page
       currChi.child("a1").set("welcome");
 
       loadData(true);
+    });
+  }
+
+  copySchedule () {
+    database.once().then((DataSnapshot snapshot) async {
+      var map = snapshot.value as Map<dynamic, dynamic>;
+      var nodes = map['users'][user]['schedules'];
+      //print (nodes);
+      //print (index);
+
+      List<String> already = List();
+
+      nodes.forEach((key, value) {
+        already.add(value['id']);
+        print (value['id'] + " is there");
+      });
+
+      int i = 1;
+      while (true) {
+        if (already.contains("a" + i.toString())){
+          i++;
+        } else {
+          break;
+        }
+      }
+      String id = "a" + i.toString();
+      print ("The chosen id is " + id);
+
+      var currChi = database.child('users').child(user).child('schedules').child(id);
+
+      currChi.set(nodes[id]);
+      currChi.child("id").set(id);
+      currChi.child("name").set(nameController.text + "2");
+
+      currChi = currChi.child("nodes");
+
+      nodes = nodes[index]['nodes'];
+      int inte = 1;
+      nodes.forEach((key, value) {
+        //already.add(value['id']);
+        //print (value['id'] + " is there");
+        var lChi = currChi.child("a" + inte.toString());
+        lChi.child('colour').set(value['colour']);
+        lChi.child('duration').set(value['duration']);
+        lChi.child('id').set('a' + inte.toString());
+        lChi.child('name').set(value['name']);
+        lChi.child('start').set(value['start']);
+        lChi.child('tags').child('a1').set('welcome');
+
+        inte++;
+      });
+
+      /*currChi.child("colour").set("blue");
+      currChi.child("duration").set(2);
+      currChi.child("id").set("a1");
+      currChi.child("name").set("first");
+      currChi.child("start").set(5);
+
+      currChi = currChi.child("tags");
+      currChi.child("a1").set("welcome");*/
+
+      print ("this is being called");
+      //loadData(true);
+      await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DailyView(oName: nameController.text + "2", identifier: id, uName: user,))
+      );
+      loadData(true);
+      //return id;
     });
   }
 
