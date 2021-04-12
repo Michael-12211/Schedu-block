@@ -3,6 +3,7 @@ import 'package:schedu_block/dailyview.dart';
 import 'package:schedu_block/schedules.dart';
 import 'package:schedu_block/weekview.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatelessWidget {
   String uName;
@@ -27,6 +28,7 @@ class HomePage extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: ElevatedButton(
                     onPressed: () {
+                      removePreferences();
                       Navigator.pop(context);
                     },
                     child: Text('Log out')
@@ -41,7 +43,7 @@ class HomePage extends StatelessWidget {
                       );
                     },
                     child: SizedBox(
-                        height: 205,
+                        height: 230,
                         width: MediaQuery.of(context).size.width * 0.7,
                         child: Column (
                           children: [
@@ -145,5 +147,13 @@ class HomePage extends StatelessWidget {
         MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: uName,)),
       );
     });
+  }
+
+  void removePreferences () async {
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.remove('user');
+
+    print ("the user is no longer persistently logged in");
   }
 }

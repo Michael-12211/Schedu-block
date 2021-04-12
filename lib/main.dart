@@ -4,6 +4,7 @@ import 'package:schedu_block/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -45,6 +46,9 @@ class _LoginState extends State<LoginPage> {
   void initState() {
     initializeFlutterFire();
     super.initState();
+
+    //persistent login
+    autoLogin();
   }
 
   @override
@@ -81,6 +85,7 @@ class _LoginState extends State<LoginPage> {
                 email: emailController.text,
                 password: passwordController.text
             );
+            savePref(emailController.text);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => HomePage(emailController.text.split("@")[0])),
@@ -149,5 +154,28 @@ class _LoginState extends State<LoginPage> {
         )
       )
     );
+  }
+
+  void savePref (String username) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.setString('user', username);
+
+    print ("saved " + username);
+  }
+
+  void autoLogin () async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String saved = prefs.getString('user') ?? "not logged in";
+
+    if (saved != "not logged in") {
+      print (saved + "was automatically logged in!");
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage(saved.split("@")[0])),
+      );
+    }
   }
 }
