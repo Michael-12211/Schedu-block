@@ -44,38 +44,44 @@ class _SchedulesState extends State<Schedules> {
 
       var fav = map['users'][uName]['favorite'];
 
-      scheds.forEach((key, value) {
+      if (scheds != null) {
+        scheds.forEach((key, value) {
+          Color col = Colors.blue;
+          if (value['id'] == fav) {
+            col = Colors.yellow;
+          }
 
-        Color col = Colors.blue;
-        if (value['id'] == fav) {
-          col = Colors.yellow;
-        }
-
-        print ('the schedule is: ' + value['name']);
-        schedules.add( Container (
-          color: col,
-          //height: 300,
-          child: MaterialButton(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 80,
-                  width: 50,
-                  child: Image(image: AssetImage('images/Icon.PNG')),
-                ),
-                Text(value['name'], style: TextStyle(fontSize: 17))
-              ],
-            ),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => DailyView(oName: value['name'], identifier: value['id'], uName: uName,)),
-              );
-              loadData(true);
-            }
-          ))
-        );
-      });
+          print('the schedule is: ' + value['name']);
+          schedules.add(Container(
+              color: col,
+              //height: 300,
+              child: MaterialButton(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 80,
+                        width: 50,
+                        child: Image(image: AssetImage('images/Icon.PNG')),
+                      ),
+                      Text(value['name'], style: TextStyle(fontSize: 17))
+                    ],
+                  ),
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DailyView(
+                        oName: value['name'],
+                        identifier: value['id'],
+                        uName: uName,)),
+                    );
+                    loadData(true);
+                  }
+              ))
+          );
+        });
+      } else {
+        schedules.add(Text("\nNo schedules have been created"));
+      }
 
       if (re) {
         print ("resetting");
@@ -177,20 +183,25 @@ class _SchedulesState extends State<Schedules> {
 
       List<String> already = List();
 
-      nodes.forEach((key, value) {
-        already.add(value['id']);
-        print (value['id'] + " is there");
-      });
+      String id = "a1";
 
-      int i = 1;
-      while (true) {
-        if (already.contains("a" + i.toString())){
-          i++;
-        } else {
-          break;
+      if (nodes!=null) {
+        nodes.forEach((key, value) {
+          already.add(value['id']);
+          print(value['id'] + " is there");
+        });
+
+        int i = 1;
+        while (true) {
+          if (already.contains("a" + i.toString())) {
+            i++;
+          } else {
+            break;
+          }
         }
+        id = "a" + i.toString();
       }
-      String id = "a" + i.toString();
+
       print ("The chosen id is " + id);
 
       var currChi = database.child('users').child(uName).child('schedules').child(id);

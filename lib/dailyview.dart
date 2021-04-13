@@ -73,80 +73,91 @@ class _DayState extends State<DailyView> { //state for the schedules page
       //print (nodes);
       //print (index);
 
-      nodes.forEach((key, value) {
-        print ('the node is: ' + value['name']);
+      if (nodes!=null) {
+        nodes.forEach((key, value) {
+          print('the node is: ' + value['name']);
 
-        List<String> tags;
+          List<String> tags;
 
-        Color col = Colors.blue; //default is blue in case an incorrect color is enterred
+          Color col = Colors
+              .blue; //default is blue in case an incorrect color is enterred
 
-        switch(value['colour']) {
-          case 'grey': {
-            col = Colors.grey;
+          switch (value['colour']) {
+            case 'grey':
+              {
+                col = Colors.grey;
+              }
+              break;
+            case 'red':
+              {
+                col = Colors.red;
+              }
+              break;
+            case 'green':
+              {
+                col = Colors.green;
+              }
           }
-          break;
-          case 'red': {
-            col = Colors.red;
-          }
-          break;
-          case 'green': {
-            col = Colors.green;
-          }
-        }
 
-        block curr = block(value['id'],value['name'],value['duration'],[],value['colour'],value['start']);
-        //value.forEa
+          block curr = block(value['id'], value['name'], value['duration'], [],
+              value['colour'], value['start']);
+          //value.forEa
 
-        schedData.add(SpannableGridCellData(
-          id: value['id'],
-          column: 2,
-          row: value['start'],
-          rowSpan: value['duration'],
-          columnSpan: 3,
-          child: Draggable<block>(
-            data: curr,
-            child: Container(
-                color: col,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(" " + curr.name, style: TextStyle(fontSize: 18)),
-                    Row(
-                      children: [
-                        MaterialButton(
-                          minWidth: 2,
-                          onPressed: () {
-                            editBlockPopup(context, curr.index, curr.name, curr.duration, curr.Color);
-                          },
-                          child: Text("i", textAlign: TextAlign.right,),
-                        ),
-                        MaterialButton(
-                          minWidth: 2,
-                          onPressed: () {
-                            print("Test");
-                            var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(curr.index);
-                            currChi.remove();
-                            loadData(true);
-                          },
-                          child: Text("X", textAlign: TextAlign.right,),
-                        )
-                      ]
-                    )
-                  ],
-                )
+          schedData.add(SpannableGridCellData(
+            id: value['id'],
+            column: 2,
+            row: value['start'],
+            rowSpan: value['duration'],
+            columnSpan: 3,
+            child: Draggable<block>(
+              data: curr,
+              child: Container(
+                  color: col,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(" " + curr.name, style: TextStyle(fontSize: 18)),
+                      Row(
+                          children: [
+                            MaterialButton(
+                              minWidth: 2,
+                              onPressed: () {
+                                editBlockPopup(context, curr.index, curr.name,
+                                    curr.duration, curr.Color);
+                              },
+                              child: Text("i", textAlign: TextAlign.right,),
+                            ),
+                            MaterialButton(
+                              minWidth: 2,
+                              onPressed: () {
+                                print("Test");
+                                var currChi = database.child('users').child(
+                                    user).child('schedules').child(index).child(
+                                    'nodes').child(curr.index);
+                                currChi.remove();
+                                loadData(true);
+                              },
+                              child: Text("X", textAlign: TextAlign.right,),
+                            )
+                          ]
+                      )
+                    ],
+                  )
+              ),
+              feedback: Container(
+                  color: col,
+                  height: 100,
+                  width: 130,
+                  child: Text(curr.name,
+                      style: TextStyle(fontSize: 18, color: Colors.black))
+              ),
             ),
-            feedback: Container(
-                color: col,
-                height: 100,
-                width: 130,
-                child: Text(curr.name, style: TextStyle(fontSize: 18, color: Colors.black))
-            ),
-          ),
-        ));
-        for (int b = curr.start; b < curr.start + curr.duration; b++){
-          occupied[b] = true;
-        }
-      });
+          ));
+          for (int b = curr.start; b < curr.start + curr.duration; b++) {
+            occupied[b] = true;
+          }
+        });
+      }
 
       String am = "am";
       for (int i = 1; i <= 24; i++) {
@@ -487,13 +498,27 @@ class _DayState extends State<DailyView> { //state for the schedules page
         open[i] = true;
       }
 
-      nodes.forEach((key, value) {
-        already.add(value['id']);
-        print (value['id'] + " is there");
-        for (int i = value['start']; i < value['start'] + value['duration']; i++) {
-          open[i] = false;
+      String id = "a1";
+      if (nodes!=null) {
+        nodes.forEach((key, value) {
+          already.add(value['id']);
+          print(value['id'] + " is there");
+          for (int i = value['start']; i <
+              value['start'] + value['duration']; i++) {
+            open[i] = false;
+          }
+        });
+
+        int i = 1;
+        while (true) {
+          if (already.contains("a" + i.toString())) {
+            i++;
+          } else {
+            break;
+          }
         }
-      });
+        id = "a" + i.toString();
+      }
 
       int start = 1;
       for (int i = 1; i < 25; i++){
@@ -503,15 +528,6 @@ class _DayState extends State<DailyView> { //state for the schedules page
         }
       }
 
-      int i = 1;
-      while (true) {
-        if (already.contains("a" + i.toString())){
-          i++;
-        } else {
-          break;
-        }
-      }
-      String id = "a" + i.toString();
       print ("The chosen id is " + id + ", starting at " + start.toString());
 
       var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(id);

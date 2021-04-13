@@ -96,6 +96,12 @@ class _SignUpState extends State<SignUp> {
                   );
                   print("account created successfully");
                   addData(emailController.text.split("@")[0]);
+                  Alert al = Alert(context: context, title: "Creation successfull", desc: "Enjoy the app",
+                  buttons: [
+                    DialogButton(child: Text("Continue"), onPressed: () => Navigator.pop(context))
+                  ]
+                  );
+                  await al.show();
                   Navigator.pop(context);
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'weak-password') {
