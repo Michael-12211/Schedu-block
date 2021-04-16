@@ -14,11 +14,11 @@ class WeekView extends StatefulWidget {
 
 class _WeekState extends State<WeekView>{
 
-  final database = FirebaseDatabase.instance.reference();
+  final database = FirebaseDatabase.instance.reference(); //accessing the database
 
-  String user;
+  String user; //username
 
-  List<String> days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  List<String> days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']; //turns ints to day names
 
   //List<SpannableGridCellData> schedData = List();
   List<Widget> scheds = List();
@@ -33,44 +33,45 @@ class _WeekState extends State<WeekView>{
           () => 'Data Loaded'
   );
 
-  loadData (bool re) {
+  loadData (bool re) { //loads the data. RE determines whether UI should be updated
     //schedData.clear();
     print ("Loading data");
-    scheds.clear();
+    scheds.clear(); //clears previous data
 
-    database.once().then((DataSnapshot snapshot) {
-      var map = snapshot.value as Map<dynamic, dynamic>;
-      var nodes = map['users'][user];
-      var d = nodes['days'];
+    database.once().then((DataSnapshot snapshot) { //loads database
+      var map = snapshot.value as Map<dynamic, dynamic>; //mapping data
+      var nodes = map['users'][user]; //access user
+      var d = nodes['days']; //accessing days
 
-      var now = DateTime.now();
+      var now = DateTime.now(); //getting current day
       //print (now.day);
-      int Today = now.day + 2;
+      int Today = now.day + 2; //compensating for error
 
-      scheds.add (Container(
+      scheds.add (Container( //add empty space
         height: MediaQuery.of(context).size.height * 0.03,
       ));
 
-      int b = Today;
-      b%=7;
-      for (int i = 0; i < 7; i++){
-        String tod = d[days[b]];
+      int b = Today; //prevents logical errors
+      b%=7; //account for overflow
+      for (int i = 0; i < 7; i++){ //for each day
+        String tod = d[days[b]]; //get the current day's name
 
+        //defaults
         Widget but;
         String disp = "Not Set";
         Color col = Colors.grey;
         double size = 15;
 
-        int curB = b;
+        int curB = b; //fixes logical errors
         if (tod != "0") { //if a schedule is set
-          disp = nodes['schedules'][tod]['name'];
-          size = 25;
+          disp = nodes['schedules'][tod]['name']; //accessing the name
+          size = 25; //enlarged text
 
-          col = Colors.blue;
+          col = Colors.blue; //blue for further distinction
 
-          but = Row(
+          but = Row( //define multiple elements
             children: [
-              Material(
+              Material( //info button
                 elevation: 5.0,
                 borderRadius: BorderRadius.circular(30),
                 color: Color(0xff31A0C7),
@@ -78,17 +79,17 @@ class _WeekState extends State<WeekView>{
                   padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
                   minWidth: 10,
                   onPressed: () async {
-                    loadThis(context, tod);
+                    loadThis(context, tod); //loads the schedule
                   },
                   child: Text("i",
                     textAlign: TextAlign.center,
                   )
                 )
               ),
-              SizedBox(
+              /*SizedBox(
                 width: 5,
-              ),
-              Material(
+              ),*/
+              Material( //delete button
                   elevation: 5.0,
                   borderRadius: BorderRadius.circular(30),
                   color: Color(0xff31A0C7),
@@ -96,7 +97,7 @@ class _WeekState extends State<WeekView>{
                       padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
                       minWidth: 10,
                       onPressed: () async {
-                        removeThis(days[curB]);
+                        removeThis(days[curB]); //removes the schedule from that day
                       },
                       child: Text("X",
                         textAlign: TextAlign.center,
@@ -110,7 +111,7 @@ class _WeekState extends State<WeekView>{
           );
         } else { //if no schedule is set
 
-          but = Material(
+          but = Material( //add button
               elevation: 5.0,
               borderRadius: BorderRadius.circular(30),
               color: Color(0xff31A0C7),
@@ -128,37 +129,39 @@ class _WeekState extends State<WeekView>{
           );
         }
 
-        scheds.add (Container(
-          width: MediaQuery.of(context).size.width * 0.7,
-          height: MediaQuery.of(context).size.height * 0.1,
-          color: col,
+        scheds.add (Container( //the column contents
+          width: MediaQuery.of(context).size.width * 0.7, //most of the screen's width
+          height: MediaQuery.of(context).size.height * 0.1, //1/10th the hieght
+          color: col, //set colour
           child: Column (
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center, //center the elements
             children: [
-              Text(days[b]),
+              Text(days[b]), //day name
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween, //appear on either side
                 children: [
                   Text(disp,
                     style: TextStyle(fontSize: size),
                   ),
                   //Text("b")
-                  but
+                  but //buttons
                 ],
               )
             ],
           )
         ));
-        scheds.add (Container(
+        scheds.add (Container( //empty space
           height: MediaQuery.of(context).size.height * 0.01,
         ));
 
+        //increment day
         b++;
         b = b%7;
       }
 
-      print ("Done loading");
+      print ("Done loading"); //logging
 
+      //update UI if requested
       if (re) {
         setState(() {
 
@@ -180,16 +183,16 @@ class _WeekState extends State<WeekView>{
                     padding: const EdgeInsets.all(36),
                     child: Column (
                     children: [
-                      FutureBuilder<String>(
+                      FutureBuilder<String>( //wait for data
                         future: _wait,
                           key: UniqueKey(),
                         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                          if (snapshot.hasData) {
+                          if (snapshot.hasData) { //once loaded
                             return Column (
                               children: scheds,
                             );
-                          } else {
-                            return CircularProgressIndicator();
+                          } else { //until loaded
+                            return CircularProgressIndicator(); //loading icon
                           }
                         }
                       ),
@@ -214,32 +217,29 @@ class _WeekState extends State<WeekView>{
     );
   }
 
-  loadThis (BuildContext context, String cur) async {
-    database.once().then((DataSnapshot snapshot) async {
-      var map = snapshot.value as Map<dynamic, dynamic>;
+  loadThis (BuildContext context, String cur) async { //loads the selected schedule
+    database.once().then((DataSnapshot snapshot) async { //gets data from database
+      var map = snapshot.value as Map<dynamic, dynamic>; //map data
       var nodes = map['users'][user];
       var id = nodes['schedules'][cur]['id'];
       var name = nodes['schedules'][cur]['name'];
 
-      await Navigator.push(
+      await Navigator.push( //navigate to day view of that schedule
         context,
         MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: user,)),
       );
 
-      loadData(true);
+      loadData(true); //update UI in case data changed
     });
   }
 
-  removeThis (String curDay) async {
-    database.child('users').child(user).child('days').child(curDay).set("0");
-    int d = 0;
-    for (int i = 1; i < 50; i++){
-      d++;
-    }
-    print (d);
-    loadData(true);
+  removeThis (String curDay) async { //remove selected shedule
+    database.child('users').child(user).child('days').child(curDay).set("0"); //sets the day as empty
+
+    loadData(true); //update UI
   }
 
+  //popup controllers
   final TextEditingController _nameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
@@ -283,15 +283,16 @@ class _WeekState extends State<WeekView>{
     );
   }
 
-  addHere (BuildContext context, String what, int when) {
+  addHere (BuildContext context, String what, int when) { //sets the schedule to the day
     print ("yes");
 
-    database.once().then((DataSnapshot snapshot) {
+    database.once().then((DataSnapshot snapshot) { //accesses the data
       var map = snapshot.value as Map<dynamic, dynamic>;
       var nodes = map['users'][user]['schedules'];
 
       bool miss = true;
 
+      //finds the id of the chosen schedule
       nodes.forEach((key, value) {
         print (value['name'] + " is there");
         if (value['name'] == what) {
@@ -303,13 +304,14 @@ class _WeekState extends State<WeekView>{
       });
 
       if (miss){
-        failPopup(context);
+        failPopup(context); //notify the user if the schedule was not found
       }
 
       loadData(true);
     });
   }
 
+  //alert for the schedule not being found. Cannot use default alerts because the calling method ends
   Future<void> failPopup(BuildContext context) async {
     return await showDialog(
         context: context,

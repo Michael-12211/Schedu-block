@@ -6,9 +6,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatelessWidget {
-  String uName;
+  String uName; //username
 
-  final database = FirebaseDatabase.instance.reference();
+  final database = FirebaseDatabase.instance.reference(); //accessing firebase
 
   HomePage (String n){
     uName = n;
@@ -112,44 +112,46 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  loadFavorite(BuildContext context) {
-    database.once().then((DataSnapshot snapshot) {
-      var map = snapshot.value as Map<dynamic, dynamic>;
+  loadFavorite(BuildContext context) { //access the favorite schedule
+    database.once().then((DataSnapshot snapshot) { //retreive data from the database
+      var map = snapshot.value as Map<dynamic, dynamic>; //map the data
+      //access necessary data
       var nodes = map['users'][uName];
       var fav = nodes['favorite'];
       var id = nodes['schedules'][fav]['id'];
       var name = nodes['schedules'][fav]['name'];
 
-      Navigator.push(
+      Navigator.push( //navigate to the favorite page
         context,
         MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: uName,)),
       );
     });
   }
 
-  loadToday(BuildContext context) {
+  loadToday(BuildContext context) { //loads current schedule
     List<String> days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-    database.once().then((DataSnapshot snapshot) {
-      var map = snapshot.value as Map<dynamic, dynamic>;
-      var nodes = map['users'][uName];
+    database.once().then((DataSnapshot snapshot) { //retreive data from database
+      var map = snapshot.value as Map<dynamic, dynamic>; //map data
+      var nodes = map['users'][uName]; //access schedules
 
-      var now = DateTime.now();
+      var now = DateTime.now(); //gets current day
       //print (now.day);
-      int Today = (now.day + 2)%7;
+      int Today = (now.day + 2)%7; //fixes logical errors
 
+      //access relevant data
       var fav = nodes['days'][days[Today]];
       var id = nodes['schedules'][fav]['id'];
       var name = nodes['schedules'][fav]['name'];
 
-      Navigator.push(
+      Navigator.push( //navigate to the current day
         context,
         MaterialPageRoute(builder: (context) => DailyView(oName: name, identifier: id, uName: uName,)),
       );
     });
   }
 
-  void removePreferences () async {
+  void removePreferences () async { //remove the shared preference when the user logs out
     final prefs = await SharedPreferences.getInstance();
 
     prefs.remove('schedu_block_user');

@@ -31,15 +31,15 @@ class _DayState extends State<DailyView> { //state for the schedules page
   final database = FirebaseDatabase.instance.reference(); //storing the frebase access
 
   //String oName;
-  String index;
-  String user;
+  String index; //id of schedule
+  String user; //username
   //List<block> blocks;
 
-  List<SpannableGridCellData> schedData = List();
-  var occupied = new List(25);
-  int where = 6;
+  List<SpannableGridCellData> schedData = List(); //the data in the schedule
+  var occupied = new List(25); //holds which spaces are available
+  //int where = 6;
 
-  TextEditingController nameController;
+  TextEditingController nameController; //controller for schedule name
 
   _DayState (String n, String k, String u){
     //oName = n;
@@ -60,29 +60,28 @@ class _DayState extends State<DailyView> { //state for the schedules page
           () => 'Data Loaded'
   );
 
-  loadData (bool re) {
-    for (int i = 0; i < 25; i++) {
+  loadData (bool re) { //loads data. RE determines whether the UI should be updated
+    for (int i = 0; i < 25; i++) { //sets all locations to open
       occupied[i] = false;
     }
 
-    schedData.clear();
+    schedData.clear(); //clears previous data
 
-    database.once().then((DataSnapshot snapshot) {
-      var map = snapshot.value as Map<dynamic, dynamic>;
-      var nodes = map['users'][user]['schedules'][index]['nodes'];
+    database.once().then((DataSnapshot snapshot) { //accesses database
+      var map = snapshot.value as Map<dynamic, dynamic>; //maps data
+      var nodes = map['users'][user]['schedules'][index]['nodes']; //gets nodes of the schedule
       //print (nodes);
       //print (index);
 
-      if (nodes!=null) {
-        nodes.forEach((key, value) {
-          print('the node is: ' + value['name']);
+      if (nodes!=null) { //if there are nodes
+        nodes.forEach((key, value) { //for each node
+          print('the node is: ' + value['name']); //logging
 
-          List<String> tags;
+          List<String> tags; //list of tags (unused, but kept for later potential implementation)
 
-          Color col = Colors
-              .blue; //default is blue in case an incorrect color is enterred
+          Color col = Colors.blue; //default is blue in case an incorrect color is enterred
 
-          switch (value['colour']) {
+          switch (value['colour']) { //turning the colour string into a UI colour
             case 'grey':
               {
                 col = Colors.grey;
@@ -99,43 +98,44 @@ class _DayState extends State<DailyView> { //state for the schedules page
               }
           }
 
+          //saving block
           block curr = block(value['id'], value['name'], value['duration'], [],
               value['colour'], value['start']);
           //value.forEa
 
-          schedData.add(SpannableGridCellData(
-            id: value['id'],
-            column: 2,
-            row: value['start'],
-            rowSpan: value['duration'],
-            columnSpan: 3,
-            child: Draggable<block>(
-              data: curr,
+          schedData.add(SpannableGridCellData( //adding UI block
+            id: value['id'], //id
+            column: 2, //aligned right of times
+            row: value['start'], //start time
+            rowSpan: value['duration'], //duration
+            columnSpan: 3, //take up the rest of the space
+            child: Draggable<block>( //allow the block to be dragged
+              data: curr, //contains block data
               child: Container(
-                  color: col,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  color: col, //setting colour
+                  child: Row( //align elements horizontally
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween, //align on opposite sides
                     children: [
-                      Text(" " + curr.name, style: TextStyle(fontSize: 18)),
-                      Row(
+                      Text(" " + curr.name, style: TextStyle(fontSize: 18)), //display name
+                      Row( //keeps the buttons isolated
                           children: [
-                            MaterialButton(
+                            MaterialButton( //edit button
                               minWidth: 2,
                               onPressed: () {
                                 editBlockPopup(context, curr.index, curr.name,
-                                    curr.duration, curr.Color);
+                                    curr.duration, curr.Color); //popup the edit menu
                               },
                               child: Text("i", textAlign: TextAlign.right,),
                             ),
-                            MaterialButton(
+                            MaterialButton( //delete button
                               minWidth: 2,
                               onPressed: () {
                                 print("Test");
                                 var currChi = database.child('users').child(
                                     user).child('schedules').child(index).child(
-                                    'nodes').child(curr.index);
-                                currChi.remove();
-                                loadData(true);
+                                    'nodes').child(curr.index); //find the element in the database
+                                currChi.remove(); //remove it
+                                loadData(true); //update UI
                               },
                               child: Text("X", textAlign: TextAlign.right,),
                             )
@@ -144,7 +144,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
                     ],
                   )
               ),
-              feedback: Container(
+              feedback: Container( //what is displayed while moving the block
                   color: col,
                   height: 100,
                   width: 130,
@@ -154,45 +154,45 @@ class _DayState extends State<DailyView> { //state for the schedules page
             ),
           ));
           for (int b = curr.start; b < curr.start + curr.duration; b++) {
-            occupied[b] = true;
+            occupied[b] = true; //sets it's covered time as occupied
           }
         });
       }
 
       String am = "am";
       for (int i = 1; i <= 24; i++) {
-        if (i >= 12)
-          am = "pm";
+        if (i >= 12) //after noon
+          am = "pm"; //changing to pm
         schedData.add(SpannableGridCellData(
             id: "time " + i.toString(),
-            column: 1,
+            column: 1, //only on the left
             row: i,
             child: Container(
-                child: Text((((i - 1) % 12) + 1).toString() + ":00" + am)
+                child: Text((((i - 1) % 12) + 1).toString() + ":00" + am) //display the time
             )
         ));
-        if (!occupied[i]) {
+        if (!occupied[i]) { //if the space is open
           schedData.add(SpannableGridCellData(
               id: "dest" + i.toString(),
               column: 2,
               row: i,
               columnSpan: 3,
-              child: DragTarget<block>(
+              child: DragTarget<block>( //sets a space the blocks can be dragged to
                 builder: (BuildContext context,
                     List<dynamic> accepted,
                     List<dynamic> rejected) {
-                  return Container(
+                  return Container( //nothing to display
 
                   );
                 },
-                onAccept: (block data) async {
-                  if (data.duration + i < 26) {
+                onAccept: (block data) async { //when a block is dragged here
+                  if (data.duration + i < 26) { //if it fits
                     print("dragged");
                     //String curkey = curr
                     var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(data.index).child('start');
-                    currChi.set(i);
+                    currChi.set(i); //sets the start time to this time
                     //blocks[data.index].start = i;
-                    loadData(true);
+                    loadData(true); //updates UI
                     //sleep(Duration (seconds: 1));
                     //etState(() {
 
@@ -203,8 +203,8 @@ class _DayState extends State<DailyView> { //state for the schedules page
           ));
         }
       }
-      if (re) {
-        setState(() {
+      if (re) { //if requested
+        setState(() { //update UI
 
         });
       }
@@ -222,20 +222,20 @@ class _DayState extends State<DailyView> { //state for the schedules page
 
 
 
-    final nameField = TextField(
-        controller: nameController,
-        onChanged: (text) {
+    final nameField = TextField( //where to enter schedule name
+        controller: nameController, //setting the controller
+        onChanged: (text) { //when the name changes
           if (text.length <= 14) { //prevents text overflow on schedules page
             print("name changed to " + text);
             database.child('users').child(user).child('schedules')
                 .child(index)
                 .child('name')
-                .set(text);
+                .set(text); //setting the new name
           } /*else {
             Alert(context: context, title: "Name length exceeded", desc: "Names can only have up to 9 characters").show();
           }*/
           },
-        obscureText: false,
+        obscureText: false, //visible
         decoration: InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             hintText: "Schedule name",
@@ -244,7 +244,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
         ),
     );
 
-    final backButton = Material(
+    final backButton = Material( //back button
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30),
         color: Color(0xff01A0C7),
@@ -256,7 +256,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             minWidth: 10,
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context); //return to the previous page
             },
             child: Text("<",
               textAlign: TextAlign.center,
@@ -264,7 +264,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
         )
     );
 
-    final addButton = Material(
+    final addButton = Material( //add button
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30),
         color: Color(0xff01A0C7),
@@ -276,7 +276,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             minWidth: 10,
             onPressed: () async {
-              await addBlockPopup(context);
+              await addBlockPopup(context); //display options to add block
             },
             child: Text("+",
               textAlign: TextAlign.center,
@@ -284,7 +284,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
         )
     );
 
-    final deleteButton = Material(
+    final deleteButton = Material( //delete button
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30),
         color: Color(0xff01A0C7),
@@ -304,7 +304,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
         )
     );
 
-    final favButton = Material(
+    final favButton = Material( //favorite button
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30),
         color: Color(0xff01A0C7),
@@ -317,7 +317,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
             minWidth: 10,
             onPressed: () {
               var currChi = database.child('users').child(user).child('favorite');
-              currChi.set(index);
+              currChi.set(index); //set favorite to this shcuedle's id
               Alert(context: context, title: "Schedule marked as favorite", desc: "This schedule can now be accessed from the home page").show();
             },
             child: Text("#",
@@ -326,7 +326,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
         )
     );
 
-    final copyButton = Material(
+    final copyButton = Material( //copy button
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30),
         color: Color(0xff01A0C7),
@@ -355,41 +355,42 @@ class _DayState extends State<DailyView> { //state for the schedules page
             color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(36),
-                  child: Column(
+                  child: Column( //vertically order elmements
                     children: [
                       nameField,
                       Container(
+                        //size relative to screen
                         height: MediaQuery.of(context).size.height * 0.7,
                         width: MediaQuery.of(context).size.width * 0.9,
                         margin: EdgeInsets.all(15.0),
                         decoration: BoxDecoration(
-                          border: Border.all(
+                          border: Border.all( //border
                             width: 2.0,
                             color: Colors.black
                           )
                         ),
-                          child: ListView(
+                          child: ListView( //doesn't contain a list, but allows scrolling
                             physics: AlwaysScrollableScrollPhysics(),
                             children: [FutureBuilder<String>(
-                              future: _wait,
+                              future: _wait, //wait for data to load
                                 builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                                  if (snapshot.hasData) {
+                                  if (snapshot.hasData) { //when loaded
                                     return SpannableGrid(
-                                        columns: 4,
-                                        rows: 24,
+                                        columns: 4, //only two columns in practice, set to 4 for sizing
+                                        rows: 24, //one for each hour
                                         spacing: 2.0,
                                         rowHeight: 50,
-                                        cells: schedData
+                                        cells: schedData //the data loaded from the database
                                     );
-                                  } else {
-                                    return CircularProgressIndicator();
+                                  } else { //until then
+                                    return CircularProgressIndicator(); //loading symbol
                                   }
                                 }
                             )]
                           )
                       ),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Row( //horizontally order buttons
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween, //space between buttons
                         children: [
                           backButton,
                           addButton,
@@ -406,15 +407,16 @@ class _DayState extends State<DailyView> { //state for the schedules page
     );
   }
 
+  //variables for page functions
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _durationController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
 
 
-  Future<void> addBlockPopup(BuildContext context) async {
+  Future<void> addBlockPopup(BuildContext context) async { //add block interface
 
-    String dVal = 'blue';
+    String dVal = 'blue'; //default colour is blue
 
     return await showDialog(
         context: context,
@@ -426,21 +428,21 @@ class _DayState extends State<DailyView> { //state for the schedules page
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextFormField(
+                    TextFormField( //name
                       controller: _nameController,
                       validator: (value) {
                         return value.isNotEmpty ? null : "Enter any text";
                       },
                       decoration: InputDecoration(hintText: "Enter block name"),
                     ),
-                    TextFormField(
+                    TextFormField( //duration
                       controller: _durationController,
                       validator: (value) {
                         return value.isNotEmpty ? null : "Enter any text";
                       },
                       decoration: InputDecoration(hintText: "Enter block duration"),
                     ),
-                    DropdownButton<String>(
+                    DropdownButton<String>( //colour
                       value: dVal,
                         icon: Icon(Icons.arrow_downward),
                         iconSize: 24,
@@ -468,11 +470,11 @@ class _DayState extends State<DailyView> { //state for the schedules page
               title: Text("Add block"),
               actions: <Widget>[
                 InkWell(
-                  child: Text("ADD"),
+                  child: Text("ADD"), //add button
                   onTap: () {
                     if (_formKey.currentState.validate()) {
                       addBlock(_nameController.text, int.parse(_durationController.text), dVal);
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(); //remove the popup
                     }
                   },
                 )
@@ -483,43 +485,44 @@ class _DayState extends State<DailyView> { //state for the schedules page
     );
   }
 
-  addBlock(String name, int dur, String col) {
-    print ("the block is " + name);
+  addBlock(String name, int dur, String col) { //code to add a block
+    print ("the block is " + name); //logging
 
-    database.once().then((DataSnapshot snapshot) {
-      var map = snapshot.value as Map<dynamic, dynamic>;
-      var nodes = map['users'][user]['schedules'][index]['nodes'];
+    database.once().then((DataSnapshot snapshot) { //access the database
+      var map = snapshot.value as Map<dynamic, dynamic>; //map the data
+      var nodes = map['users'][user]['schedules'][index]['nodes']; //access nodes
       //print (nodes);
       //print (index);
 
-      List<String> already = List();
-      var open = List<bool>(25);
+      List<String> already = List(); //list of taken IDs
+      var open = List<bool>(25); //list of open times
       for (int i = 0; i < 25; i++) {
         open[i] = true;
       }
 
       String id = "a1";
-      if (nodes!=null) {
-        nodes.forEach((key, value) {
-          already.add(value['id']);
-          print(value['id'] + " is there");
+      if (nodes!=null) { //if there are nodes
+        nodes.forEach((key, value) { //for each node
+          already.add(value['id']); //record the id as taken
+          print(value['id'] + " is there"); //logging
           for (int i = value['start']; i <
               value['start'] + value['duration']; i++) {
-            open[i] = false;
+            open[i] = false; //set the covered times as unavailable
           }
         });
 
         int i = 1;
-        while (true) {
-          if (already.contains("a" + i.toString())) {
-            i++;
-          } else {
+        while (true) { //until a valid id is found
+          if (already.contains("a" + i.toString())) { //if the id is taken
+            i++; //increment
+          } else { //if it is available
             break;
           }
         }
-        id = "a" + i.toString();
+        id = "a" + i.toString(); //set the id
       }
 
+      //finding valid start time
       int start = 1;
       for (int i = 1; i < 25; i++){
         if (open[i]) {
@@ -528,10 +531,12 @@ class _DayState extends State<DailyView> { //state for the schedules page
         }
       }
 
-      print ("The chosen id is " + id + ", starting at " + start.toString());
+      print ("The chosen id is " + id + ", starting at " + start.toString()); //logging
 
+      //access the chosen id
       var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(id);
 
+      //set the data
       currChi.child("colour").set(col);
       currChi.child("duration").set(dur);
       currChi.child("id").set(id);
@@ -545,7 +550,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
     });
   }
 
-  Future<void> deletePopup(BuildContext context) async {
+  Future<void> deletePopup(BuildContext context) async { //delete confirmation
     return await showDialog(
         context: context,
         builder: (context){
@@ -567,8 +572,8 @@ class _DayState extends State<DailyView> { //state for the schedules page
                   onTap: () {
                     var currChi = database.child('users').child(user).child('schedules').child(index);
                     currChi.remove();
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+                    Navigator.pop(context); //close popup
+                    Navigator.pop(context); //close schedule editor now that the schedule does not exist
                   },
                 )
               ],
@@ -584,7 +589,7 @@ class _DayState extends State<DailyView> { //state for the schedules page
     _durationController.text = "" + currVal.toString();
     String dVal = currCol;
 
-    return await showDialog(
+    return await showDialog( //similar to creating a new block, but with pre-filled settings
         context: context,
         builder: (context){
           return StatefulBuilder(builder: (context, setState) {
@@ -651,57 +656,38 @@ class _DayState extends State<DailyView> { //state for the schedules page
     );
   }
 
-  editBlock(String id, String name, int dur, String col) {
+  editBlock(String id, String name, int dur, String col) { //saving edited settings
     print ("the block is " + name);
 
-    database.once().then((DataSnapshot snapshot) {
-      var map = snapshot.value as Map<dynamic, dynamic>;
-      var nodes = map['users'][user]['schedules'][index]['nodes'];
-      //print (nodes);
-      //print (index);
-
-      List<String> already = List();
-      var open = List<bool>(25);
-      for (int i = 0; i < 25; i++) {
-        open[i] = true;
-      }
-
-      nodes.forEach((key, value) {
-        already.add(value['id']);
-        print (value['id'] + " is there");
-        for (int i = value['start']; i < value['start'] + value['duration']; i++) {
-          open[i] = false;
-        }
-      });
-
+    //access block data
       var currChi = database.child('users').child(user).child('schedules').child(index).child('nodes').child(id);
 
+      //set data
       currChi.child("colour").set(col);
       currChi.child("duration").set(dur);
-      currChi.child("id").set(id);
       currChi.child("name").set(name);
 
       currChi = currChi.child("tags");
       currChi.child("a1").set("welcome");
 
       loadData(true);
-    });
   }
 
-  copySchedule () {
-    database.once().then((DataSnapshot snapshot) async {
-      var map = snapshot.value as Map<dynamic, dynamic>;
-      var nodes = map['users'][user]['schedules'];
+  copySchedule () { //create a copy of the schedule. Mostly same as ne schedule, but with more pre-set data
+    database.once().then((DataSnapshot snapshot) async { //access the database
+      var map = snapshot.value as Map<dynamic, dynamic>; //map the data
+      var nodes = map['users'][user]['schedules']; //access nodes
       //print (nodes);
       //print (index);
 
-      List<String> already = List();
+      List<String> already = List(); //list of taken IDs
 
-      nodes.forEach((key, value) {
+      nodes.forEach((key, value) { //record the taken ids
         already.add(value['id']);
         print (value['id'] + " is there");
       });
 
+      //find a valid id
       int i = 1;
       while (true) {
         if (already.contains("a" + i.toString())){
@@ -713,16 +699,18 @@ class _DayState extends State<DailyView> { //state for the schedules page
       String id = "a" + i.toString();
       print ("The chosen id is " + id);
 
-      var currChi = database.child('users').child(user).child('schedules').child(id);
+      var currChi = database.child('users').child(user).child('schedules').child(id); //accessing chosen id
 
       currChi.set(nodes[id]);
       currChi.child("id").set(id);
-      currChi.child("name").set(nameController.text + "2");
+      currChi.child("name").set(nameController.text + "2"); //appends 2 to name
 
-      currChi = currChi.child("nodes");
+      currChi = currChi.child("nodes"); //moving to nodes
 
-      nodes = nodes[index]['nodes'];
+      nodes = nodes[index]['nodes']; //accessing nodes of the copied schedule
       int inte = 1;
+
+      //copy current nodes to new schedule
       nodes.forEach((key, value) {
         //already.add(value['id']);
         //print (value['id'] + " is there");

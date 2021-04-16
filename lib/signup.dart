@@ -20,7 +20,7 @@ class _SignUpState extends State<SignUp> {
   bool _initialized = false;
   bool _error = false;
 
-  void initializeFlutterFire() async {
+  void initializeFlutterFire() async { //accessing firebase authentication
     try {
       await Firebase.initializeApp();
       setState(() {
@@ -33,6 +33,7 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
+  //controllers
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   TextEditingController confirmController = new TextEditingController();
@@ -45,7 +46,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    final emailField = TextField(
+    final emailField = TextField( //email tex field
         controller: emailController,
         obscureText: false,
         decoration: InputDecoration(
@@ -55,7 +56,7 @@ class _SignUpState extends State<SignUp> {
                 borderRadius: BorderRadius.circular(32.0))
         )
     );
-    final passwordField = TextField(
+    final passwordField = TextField( //password text field
         controller: passwordController,
         obscureText: true,
         decoration: InputDecoration(
@@ -65,7 +66,7 @@ class _SignUpState extends State<SignUp> {
                 borderRadius: BorderRadius.circular(32.0))
         )
     );
-    final confirmField = TextField(
+    final confirmField = TextField( //confirm password
         controller: confirmController,
         obscureText: true,
         decoration: InputDecoration(
@@ -75,7 +76,7 @@ class _SignUpState extends State<SignUp> {
                 borderRadius: BorderRadius.circular(32.0))
         )
     );
-    final createButton = Material(
+    final createButton = Material( //create button
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30),
         color: Color(0xff01A0C7),
@@ -87,32 +88,33 @@ class _SignUpState extends State<SignUp> {
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             onPressed: () async {
               print('Attempting to create account');
-              if (passwordController.text == confirmController.text) {
+              if (passwordController.text == confirmController.text) { //if password is confirmed
                 try {
                   UserCredential userCredential = await FirebaseAuth.instance
                       .createUserWithEmailAndPassword(
                       email: emailController.text,
                       password: passwordController.text
                   );
-                  print("account created successfully");
-                  addData(emailController.text.split("@")[0]);
+                  print("account created successfully"); //logging
+                  addData(emailController.text.split("@")[0]); //turn email into savable username
+                  //inform user account was created successfully
                   Alert al = Alert(context: context, title: "Creation successfull", desc: "Enjoy the app",
                   buttons: [
                     DialogButton(child: Text("Continue"), onPressed: () => Navigator.pop(context))
                   ]
                   );
                   await al.show();
-                  Navigator.pop(context);
-                } on FirebaseAuthException catch (e) {
+                  Navigator.pop(context); //return to sign in page
+                } on FirebaseAuthException catch (e) { //weak password
                   if (e.code == 'weak-password') {
                     Alert(context: context, title: "Creation failed", desc: "Password too weak").show();
                     //print("password was too weak");
-                  } else if (e.code == 'email-already-in-use') {
+                  } else if (e.code == 'email-already-in-use') { //email in use
                     Alert(context: context, title: "Creation failed", desc: "That email is taken").show();
                     //print("An account exists for that email");
                   }
                 }
-              } else {
+              } else { //if password was not confirmed
                 Alert(context: context, title: "Creation failed", desc: "Confirm password does not match password").show();
                 //print("password was not confirmed");
               }
@@ -124,7 +126,7 @@ class _SignUpState extends State<SignUp> {
         )
     );
 
-    final backButton = Material(
+    final backButton = Material( //back button
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30),
         color: Color(0xff01A0C7),
@@ -134,7 +136,7 @@ class _SignUpState extends State<SignUp> {
                 .size
                 .width,
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-            onPressed: () {
+            onPressed: () { //returns to sign in page
               Navigator.pop(context);
             },
             child: Text("<",
@@ -150,7 +152,7 @@ class _SignUpState extends State<SignUp> {
                 child: Padding(
                     padding: const EdgeInsets.all(36),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center, //center elements
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text ("Sign up", style: TextStyle(fontSize: 30)),
@@ -172,10 +174,11 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  addData (String name) {
-    var currChi = database.child('users').child(name);
+  addData (String name) { //adds default data for users to get familiar with the application
+    var currChi = database.child('users').child(name); //access user's account
     currChi.child("favorite").set("a1");
 
+    //default data
     var days = currChi.child("days");
     days.child("mon").set("0");
     days.child("tue").set("0");

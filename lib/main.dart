@@ -26,6 +26,7 @@ class _LoginState extends State<LoginPage> {
   bool _initialized = false;
   bool _error = false;
 
+  //code to connect to firebase. Taken from firebase sources
   void initializeFlutterFire() async {
     try {
       await Firebase.initializeApp();
@@ -39,6 +40,7 @@ class _LoginState extends State<LoginPage> {
     }
   }
 
+  //necessary controllers
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
@@ -53,48 +55,48 @@ class _LoginState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final emailField = TextField(
-      controller: emailController,
-      obscureText: false,
+    final emailField = TextField( //defining the email text field
+      controller: emailController, //setting the controller
+      obscureText: false, //visible
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Email",
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
       )
     );
-    final passwordField = TextField(
-      controller: passwordController,
-        obscureText: true,
+    final passwordField = TextField( //defining the password text field
+      controller: passwordController, //setting the controller
+        obscureText: true, //not visible
         decoration: InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             hintText: "Password",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
         )
     );
-    final loginButton = Material(
+    final loginButton = Material( //login button
       elevation: 5.0,
       borderRadius: BorderRadius.circular(30),
       color: Color(0xff01A0C7),
       child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width,
+        minWidth: MediaQuery.of(context).size.width, //cover the whole width
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         onPressed: () async {
-          print('The user is ${emailController.text} with password ${passwordController.text}');
+          print('The user is ${emailController.text} with password ${passwordController.text}'); //logging
           try {
             UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
                 email: emailController.text,
                 password: passwordController.text
             );
-            savePref(emailController.text);
-            Navigator.push(
+            savePref(emailController.text); //if successful, keep them logged in
+            Navigator.push( //enter the home page
               context,
               MaterialPageRoute(builder: (context) => HomePage(emailController.text.split("@")[0])),
             );
-          } on FirebaseAuthException catch (e) {
+          } on FirebaseAuthException catch (e) { //user not found
             if (e.code == 'user-not-found') {
               Alert(context: context, title: "login failed", desc: "There is no user with that email").show();
               //print('No user with that email');
-            } else if (e.code == 'wrong-password') {
+            } else if (e.code == 'wrong-password') { //wrong password
               Alert(context: context, title: "login failed", desc: "Incorrect password").show();
               //print('Wrong password');
             }
@@ -106,15 +108,15 @@ class _LoginState extends State<LoginPage> {
         )
       )
     );
-    final signUpButton = Material(
+    final signUpButton = Material( //sign up button
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30),
         color: Color(0xff01A0C7),
         child: MaterialButton(
-            minWidth: MediaQuery.of(context).size.width,
+            minWidth: MediaQuery.of(context).size.width, //takeup entire width
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             onPressed: () {
-              Navigator.push(
+              Navigator.push( //navigate to sign up page
                 context,
                 MaterialPageRoute(builder: (context) => SignUp()),
               );
@@ -131,14 +133,15 @@ class _LoginState extends State<LoginPage> {
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(36),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Column( //display elements vertically
+              crossAxisAlignment: CrossAxisAlignment.center, //center elements
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
+                SizedBox( //set image size
                   height: 155,
-                  child: Image(image: AssetImage('images/Logo.PNG'))
+                  child: Image(image: AssetImage('images/Logo.PNG')) //app logo with text
                 ),
+                //load sections with spacing
                 SizedBox(height: 45),
                 emailField,
                 SizedBox(height: 15),
@@ -156,23 +159,23 @@ class _LoginState extends State<LoginPage> {
     );
   }
 
-  void savePref (String username) async {
-    final prefs = await SharedPreferences.getInstance();
+  void savePref (String username) async { //save shared preference so user can stay logged in
+    final prefs = await SharedPreferences.getInstance(); //get shared preferences
 
-    prefs.setString('schedu_block_user', username);
+    prefs.setString('schedu_block_user', username); //set who is saved
 
-    print ("saved " + username);
+    print ("saved " + username); //logging
   }
 
-  void autoLogin () async {
-    final prefs = await SharedPreferences.getInstance();
+  void autoLogin () async { //auto log in if the user has logged in before
+    final prefs = await SharedPreferences.getInstance(); //get shared preferences
 
-    String saved = prefs.getString('schedu_block_user') ?? "not logged in";
+    String saved = prefs.getString('schedu_block_user') ?? "not logged in"; //get the required shared preference
 
-    if (saved != "not logged in") {
-      print (saved + "was automatically logged in!");
+    if (saved != "not logged in") { //if the user has logged in
+      print (saved + "was automatically logged in!"); //logging
 
-      Navigator.push(
+      Navigator.push( //navigate to the home page
         context,
         MaterialPageRoute(builder: (context) => HomePage(saved.split("@")[0])),
       );
