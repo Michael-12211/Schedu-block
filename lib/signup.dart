@@ -96,7 +96,8 @@ class _SignUpState extends State<SignUp> {
                       password: passwordController.text
                   );
                   print("account created successfully"); //logging
-                  addData(emailController.text.split("@")[0]); //turn email into savable username
+                  var nSec = emailController.text.split("@");
+                  addData(nSec[0] + nSec[1].split(".")[0]); //turn email into savable username
                   //inform user account was created successfully
                   Alert al = Alert(context: context, title: "Creation successfull", desc: "Enjoy the app",
                   buttons: [

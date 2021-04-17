@@ -88,9 +88,10 @@ class _LoginState extends State<LoginPage> {
                 password: passwordController.text
             );
             savePref(emailController.text); //if successful, keep them logged in
+            var nSec = emailController.text.split("@");
             Navigator.push( //enter the home page
               context,
-              MaterialPageRoute(builder: (context) => HomePage(emailController.text.split("@")[0])),
+              MaterialPageRoute(builder: (context) => HomePage(nSec[0] + nSec[1].split(".")[0])),
             );
           } on FirebaseAuthException catch (e) { //user not found
             if (e.code == 'user-not-found') {
@@ -175,9 +176,11 @@ class _LoginState extends State<LoginPage> {
     if (saved != "not logged in") { //if the user has logged in
       print (saved + "was automatically logged in!"); //logging
 
+      var nSec = saved.split("@");
+
       Navigator.push( //navigate to the home page
         context,
-        MaterialPageRoute(builder: (context) => HomePage(saved.split("@")[0])),
+        MaterialPageRoute(builder: (context) => HomePage(nSec[0] + nSec[1].split(".")[0])),
       );
     }
   }
