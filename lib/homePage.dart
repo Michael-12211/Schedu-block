@@ -70,7 +70,14 @@ class HomePage extends StatelessWidget {
                             MaterialPageRoute(builder: (context) => Schedules(uName: uName)),
                           );
                         },
-                        child: Text('Schedules', style: TextStyle(fontSize: 20))
+                        child:
+                        SizedBox(
+                          height: 125,
+                            child: Column (
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [Text('Schedules', style: TextStyle(fontSize: 20))]
+                            )
+                        )
                       ),
                       SizedBox(width: MediaQuery.of(context).size.width * 0.06),
                       ElevatedButton(
